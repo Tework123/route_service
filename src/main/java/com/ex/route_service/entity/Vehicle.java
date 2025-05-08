@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "vehicle")
-public class Vehicle  {
+public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

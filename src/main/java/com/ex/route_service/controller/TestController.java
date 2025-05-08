@@ -1,6 +1,6 @@
 package com.ex.route_service.controller;
 
-import com.ex.netgeo.service.GeoIpService;
+import com.ex.route_service.service.GeoIpService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

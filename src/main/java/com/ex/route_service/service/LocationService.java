@@ -34,7 +34,7 @@ public class LocationService {
     @Transactional
     public void save(CreateLocationRequestDto dto) {
         WorkShiftSession workShiftSession = workShiftSessionRepository.findById(dto.getWorkShiftSessionId())
-                .orElseThrow(() -> new EntityNotFoundException("Device not found with id: " + dto.getWorkShiftSessionId()));
+                .orElseThrow(() -> new EntityNotFoundException("session not found with id: " + dto.getWorkShiftSessionId()));
 
         LocationPoint locationPoint = locationPointMapper.toEntity(dto, workShiftSession);
         locationPointRepository.save(locationPoint);
