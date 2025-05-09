@@ -1,4 +1,4 @@
-package com.ex.route_service.dto.locationPointDto;
+package com.ex.route_service.dto.RouteServiceDto.locationPointDto;
 
 import lombok.*;
 

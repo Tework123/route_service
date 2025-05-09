@@ -1,5 +1,7 @@
 package com.ex.route_service.entity;
 
+import com.ex.route_service.enums.RouteEventStatus;
+import com.ex.route_service.enums.WorkShiftSessionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,9 +25,9 @@ public class WorkShiftSession {
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+//    выпилил транспорт
+
+//    TODO oneTOmany с locationPoint
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
@@ -33,8 +35,8 @@ public class WorkShiftSession {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "is_active")
-    private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private WorkShiftSessionStatus workShiftSessionStatus;
 
     @Column(name = "time_create", nullable = false)
     private LocalDateTime timeCreate;

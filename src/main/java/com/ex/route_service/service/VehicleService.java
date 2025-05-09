@@ -1,9 +1,9 @@
 package com.ex.route_service.service;
 
 import com.ex.route_service.AppStartupLogger;
-import com.ex.route_service.dto.vehicleDto.CreateVehicleRequestDto;
-import com.ex.route_service.dto.vehicleDto.GetVehicleResponseDto;
-import com.ex.route_service.dto.vehicleDto.UpdateVehicleDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.CreateVehicleRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.GetVehicleResponseDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.UpdateVehicleDto;
 import com.ex.route_service.entity.Vehicle;
 import com.ex.route_service.mapper.VehicleMapper;
 import com.ex.route_service.repository.VehicleRepository;

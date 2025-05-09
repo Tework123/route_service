@@ -1,4 +1,4 @@
-package com.ex.route_service.dto.vehicleDto;
+package com.ex.route_service.dto.RouteServiceDto.vehicleDto;
 
 import com.ex.route_service.enums.VehicleStatus;
 import lombok.*;

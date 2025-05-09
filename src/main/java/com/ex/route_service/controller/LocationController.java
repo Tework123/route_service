@@ -1,7 +1,7 @@
 package com.ex.route_service.controller;
 
-import com.ex.route_service.dto.locationPointDto.CreateLocationRequestDto;
-import com.ex.route_service.dto.locationPointDto.GetLastLocationPointDto;
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.CreateLocationRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.GetLastLocationPointDto;
 import com.ex.route_service.service.LocationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

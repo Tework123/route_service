@@ -25,7 +25,10 @@ public class RouteEvent {
     @JoinColumn(name = "work_shift_session_id")
     private WorkShiftSession workShiftSession;
 
-//    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
+    //    TODO manyTOOne с locationPoint
+
+
+    //    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
     @Column(name = "order_id", nullable = true)
     private UUID orderId;
 

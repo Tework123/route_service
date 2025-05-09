@@ -1,12 +1,9 @@
 package com.ex.route_service.service;
 
-import com.ex.route_service.dto.locationPointDto.CreateLocationRequestDto;
-import com.ex.route_service.dto.routeEventDto.CreateRouteEventDto;
-import com.ex.route_service.entity.LocationPoint;
+import com.ex.route_service.dto.RouteServiceDto.routeEventDto.CreateRouteEventDto;
 import com.ex.route_service.entity.RouteEvent;
 import com.ex.route_service.entity.WorkShiftSession;
 import com.ex.route_service.mapper.RouteEventMapper;
-import com.ex.route_service.repository.LocationPointRepository;
 import com.ex.route_service.repository.RouteEventRepository;
 import com.ex.route_service.repository.WorkShiftSessionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +19,7 @@ public class RouteEventService {
     private final WorkShiftSessionRepository workShiftSessionRepository;
     private final RouteEventMapper routeEventMapper;
 
+//
     @Transactional
     public void create(CreateRouteEventDto dto) {
 

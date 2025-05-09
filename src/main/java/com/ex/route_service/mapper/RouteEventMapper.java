@@ -1,9 +1,6 @@
 package com.ex.route_service.mapper;
 
-import com.ex.route_service.dto.locationPointDto.CreateLocationRequestDto;
-import com.ex.route_service.dto.locationPointDto.GetLastLocationPointDto;
-import com.ex.route_service.dto.routeEventDto.CreateRouteEventDto;
-import com.ex.route_service.entity.LocationPoint;
+import com.ex.route_service.dto.RouteServiceDto.routeEventDto.CreateRouteEventDto;
 import com.ex.route_service.entity.RouteEvent;
 import com.ex.route_service.entity.WorkShiftSession;
 import org.springframework.stereotype.Component;

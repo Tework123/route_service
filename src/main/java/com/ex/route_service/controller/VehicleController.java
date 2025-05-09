@@ -1,8 +1,8 @@
 package com.ex.route_service.controller;
 
-import com.ex.route_service.dto.vehicleDto.CreateVehicleRequestDto;
-import com.ex.route_service.dto.vehicleDto.GetVehicleResponseDto;
-import com.ex.route_service.dto.vehicleDto.UpdateVehicleDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.CreateVehicleRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.GetVehicleResponseDto;
+import com.ex.route_service.dto.RouteServiceDto.vehicleDto.UpdateVehicleDto;
 import com.ex.route_service.service.VehicleService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

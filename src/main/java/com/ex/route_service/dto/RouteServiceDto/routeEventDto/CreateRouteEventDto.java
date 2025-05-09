@@ -1,4 +1,4 @@
-package com.ex.route_service.dto.routeEventDto;
+package com.ex.route_service.dto.RouteServiceDto.routeEventDto;
 
 import com.ex.route_service.enums.RouteEventStatus;
 import lombok.*;

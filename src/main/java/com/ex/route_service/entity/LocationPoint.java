@@ -25,12 +25,11 @@ public class LocationPoint {
     private UUID locationPointId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "work_shift_session_id")
     private WorkShiftSession workShiftSession;
+
+
+    //    TODO OneToMany с routeEvent
 
     /**
      * Широта (latitude) точки координат.
