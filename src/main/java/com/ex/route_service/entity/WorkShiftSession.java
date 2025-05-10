@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -27,7 +29,9 @@ public class WorkShiftSession {
 
 //    выпилил транспорт
 
-//    TODO oneTOmany с locationPoint
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,
+            orphanRemoval = true, mappedBy = "workShiftSession")
+    private List<LocationPoint> locationPointList = new ArrayList<>();
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;

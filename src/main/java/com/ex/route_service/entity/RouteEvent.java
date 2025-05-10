@@ -25,8 +25,9 @@ public class RouteEvent {
     @JoinColumn(name = "work_shift_session_id")
     private WorkShiftSession workShiftSession;
 
-    //    TODO manyTOOne с locationPoint
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "location_point_id")
+    private LocationPoint locationPoint;
 
     //    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
     @Column(name = "order_id", nullable = true)

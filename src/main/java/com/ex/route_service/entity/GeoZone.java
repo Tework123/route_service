@@ -32,11 +32,18 @@ public class GeoZone {
     @Column(columnDefinition = "geometry(Polygon, 4326)", nullable = false)
     private Polygon geometry;
 
+    // Идентификатор ресторана, связанного с этой геозоной
+    @Column(name = "restaurant_id", nullable = true)
+    private UUID restaurantId;
+
     /**
      * Время создания геозоны.
      */
     @Column(name = "time_create", nullable = false, updatable = false)
     private LocalDateTime timeCreate;
+
+    @Column(name = "time_update")
+    private LocalDateTime timeUpdate;
 
     @PrePersist
     public void prePersist() {

@@ -1,6 +1,6 @@
 package com.ex.route_service.controller;
 
-import com.ex.route_service.dto.OrderServiceDto.GetCouriersDto;
+
 import com.ex.route_service.dto.OrderServiceDto.GetWorkShiftSessionsDto;
 import com.ex.route_service.dto.RouteServiceDto.workShiftSessionDto.CreateWorkShiftSessionDto;
 import com.ex.route_service.service.WorkShiftSessionService;
@@ -22,7 +22,7 @@ public class WorkShiftSessionController {
 //    отдает рабочие сессии с ready и координаты курьеров, очевидно это не должен быть контроллер, пока так
     @GetMapping("/users")
     public ResponseEntity<Void> getAllWorkShiftSessionsByCoordinates(@RequestBody GetWorkShiftSessionsDto request) {
-        workShiftSessionService.create(request, userId);
+        workShiftSessionService.getAllWorkShiftSessionsByCoordinates(request);
         return ResponseEntity.ok().build();
     }
 

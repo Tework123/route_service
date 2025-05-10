@@ -3,7 +3,7 @@ package com.ex.route_service.service;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.CreateLocationRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.GetLastLocationPointDto;
 import com.ex.route_service.entity.LocationPoint;
-import com.ex.route_service.entity.Vehicle;
+
 import com.ex.route_service.entity.WorkShiftSession;
 import com.ex.route_service.mapper.LocationPointMapper;
 import com.ex.route_service.repository.LocationPointRepository;

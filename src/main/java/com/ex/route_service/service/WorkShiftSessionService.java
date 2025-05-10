@@ -1,5 +1,6 @@
 package com.ex.route_service.service;
 
+import com.ex.route_service.dto.OrderServiceDto.GetWorkShiftSessionsDto;
 import com.ex.route_service.dto.RouteServiceDto.workShiftSessionDto.CreateWorkShiftSessionDto;
 import com.ex.route_service.entity.WorkShiftSession;
 import com.ex.route_service.enums.WorkShiftSessionStatus;
@@ -38,16 +39,18 @@ public class WorkShiftSessionService {
     //    должен возвращать list активных рабочих смен,
     //    надо фильтровать по статус смены и координатам(в каком то пределе,
     //    допустим пару километров от места доставки и места получения заказа, спросить у gpt)
-    public void getAllWorkShiftSessionsByCoordinates(CreateWorkShiftSessionDto dto, UUID userId) {
+    public void getAllWorkShiftSessionsByCoordinates(GetWorkShiftSessionsDto dto) {
 
-//         пытаемся у этого курьера найти активную рабочую сессию, если нет, создаем новую
-        List<WorkShiftSession> workShiftSessionList = workShiftSessionRepository.findAllByUserIdAndStatusNotAborted(userId);
-        if (!workShiftSessionList.isEmpty()) {
-            throw new EntityNotFoundException("Найдена активная смена для курьера с id: " + userId);
-        }
+        List<WorkShiftSession> sessions = workShiftSessionRepository.findAllReadyWorkShifts(
+                dto.getLatitudeClient(),              // latitude
+                dto.getLongitudeClient(),               // longitude
+                5,           // minutesAgo
+                2000                   // distance in meters
+        );
+//        sessions.getFirst().getLocationPointList().getFirst().getLatitude();
 
-        WorkShiftSession newWorkShiftSession = workShiftSessionMapper.toEntity(dto, WorkShiftSessionStatus.READY, userId);
-        workShiftSessionRepository.save(newWorkShiftSession);
+//        WorkShiftSession newWorkShiftSession = workShiftSessionMapper.toEntity(dto, WorkShiftSessionStatus.READY, userId);
+//        workShiftSessionRepository.save(newWorkShiftSession);
 
     }
 }
