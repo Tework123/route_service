@@ -19,33 +19,18 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "location_point")
-public class LocationPoint {
+@Table(name = "courier_location_point")
+public class CourierLocationPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "location_point_id", nullable = false, updatable = false)
-    private UUID locationPointId;
+    @Column(name = "courier_location_point_id", nullable = false, updatable = false)
+    private UUID courierLocationPointId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "work_shift_session_id", nullable = false)
-    private WorkShiftSession workShiftSession;
+    @JoinColumn(name = "courier_id", nullable = true)
+    private Courier courier;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,
-            orphanRemoval = true, mappedBy = "locationPoint")
-    private List<RouteEvent> routeEventList = new ArrayList<>();
-
-//    /**
-//     * Широта (latitude) точки координат.
-//     */
-//    @Column(name = "latitude", nullable = false)
-//    private double latitude;
-//
-//    /**
-//     * Долгота (longitude) точки координат.
-//     */
-//    @Column(name = "longitude", nullable = false)
-//    private double longitude;
 
     @Column(name = "location", columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point location;

@@ -1,6 +1,6 @@
 package com.ex.route_service.mapper;
 
-import com.ex.route_service.dto.RouteServiceDto.workShiftSessionDto.CreateWorkShiftSessionDto;
+import com.ex.route_service.dto.RouteServiceDto.courierDto.CreateWorkShiftSessionDto;
 import com.ex.route_service.entity.WorkShiftSession;
 import com.ex.route_service.enums.WorkShiftSessionStatus;
 import org.springframework.stereotype.Component;

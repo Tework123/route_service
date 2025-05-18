@@ -1,6 +1,5 @@
 package com.ex.route_service.controller;
 
-import com.ex.route_service.dto.RouteServiceDto.routeEventDto.CreateRouteEventDto;
 import com.ex.route_service.service.RouteEventService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

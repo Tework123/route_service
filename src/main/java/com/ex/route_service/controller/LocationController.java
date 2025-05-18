@@ -19,6 +19,8 @@ import java.util.UUID;
 @RequestMapping("/location")
 @AllArgsConstructor
 public class LocationController {
+    //TODO изменить название, этот контроллер принимает координаты курьера и пишет в базу
+//     надо менять как у курьера последнюю точку, так и добавлять запись для истории
 
     private final LocationService locationService;
 

@@ -3,7 +3,7 @@ package com.ex.route_service.enums;
 /**
  * Типы событий маршрута курьера, фиксируемые во время рабочей смены.
  */
-public enum RouteEventStatus {
+public enum CourierRouteEventStatus {
     /**
      * Курьер начал смену.
      */
