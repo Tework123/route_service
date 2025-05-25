@@ -1,18 +1,19 @@
 package com.ex.route_service.dto.RouteServiceDto.locationPointDto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateLocationRequestDto {
-    private UUID workShiftSessionId;
-    private double latitude;
+public class LocationDto {
     private double longitude;
+    private double latitude;
     private LocalDateTime timestamp;
+
 }

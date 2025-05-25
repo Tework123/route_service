@@ -5,13 +5,11 @@ import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
  * Сущность "Точка местоположения".
- * Хранит координаты устройства в определённый момент времени
+ * Хранит координаты устройства в определённый момент времени, без ивента
  */
 @Getter
 @Setter
@@ -19,17 +17,20 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "courier_location_point")
-public class CourierLocationPoint {
+@Table(name = "location_point")
+public class LocationPoint {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "courier_location_point_id", nullable = false, updatable = false)
-    private UUID courierLocationPointId;
+    @Column(name = "location_point_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
+    private UUID locationPointId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "courier_id", nullable = true)
     private Courier courier;
+
+//    у координаты может не быть ивента
+    @OneToOne(mappedBy = "locationPoint", optional = true)
+    private RouteEvent routeEvent;
 
 
     @Column(name = "location", columnDefinition = "geometry(Point, 4326)", nullable = false)

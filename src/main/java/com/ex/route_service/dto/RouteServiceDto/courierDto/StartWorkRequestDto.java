@@ -1,4 +1,4 @@
-package com.ex.route_service.dto.RouteServiceDto.routeEventDto;
+package com.ex.route_service.dto.RouteServiceDto.courierDto;
 
 import lombok.*;
 

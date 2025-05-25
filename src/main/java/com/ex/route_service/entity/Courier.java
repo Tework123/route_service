@@ -4,7 +4,6 @@ import com.ex.route_service.enums.CourierStatus;
 import com.ex.route_service.enums.TransportType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +19,16 @@ import java.util.UUID;
 public class Courier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "courier_id", nullable = false, updatable = false)
+    @Column(name = "courier_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
     private UUID courierId;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,
             orphanRemoval = true, mappedBy = "courier")
-    private List<CourierLocationPoint> courierLocationPoints = new ArrayList<>();
+    private List<LocationPoint> locationPoints = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,
             orphanRemoval = true, mappedBy = "courier")
-    private List<CourierRouteEvent> courierRouteEvents = new ArrayList<>();
+    private List<RouteEvent> routeEvents = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transport_type", nullable = false)
@@ -38,8 +36,4 @@ public class Courier {
 
     @Enumerated(EnumType.STRING)
     private CourierStatus courierStatus;
-
-    @Column(name = "current_location", columnDefinition = "geometry(Point, 4326)", nullable = false)
-    private Point currentLocation;
-
 }

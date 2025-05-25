@@ -1,5 +1,6 @@
 package com.ex.route_service.dto.RouteServiceDto.courierDto;
 
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
 import com.ex.route_service.enums.CourierStatus;
 import com.ex.route_service.enums.TransportType;
 import lombok.*;
@@ -20,14 +21,6 @@ public class GetCouriersForOrderResponseDto {
     //        дистанция общая для доставки
     private double distance;
 
-    LocationDto currentLocation;
+    private LocationDto currentLocation;
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class LocationDto {
-        private double longitude;
-        private double latitude;
-    }
 }

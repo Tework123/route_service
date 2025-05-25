@@ -1,11 +1,9 @@
 package com.ex.route_service.controller;
 
 
-import com.ex.route_service.dto.OrderServiceDto.NewOrderDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
-import com.ex.route_service.dto.RouteServiceDto.routeEventDto.StartWorkRequestDto;
-import com.ex.route_service.mapper.CourierMapper;
+import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
 import com.ex.route_service.service.CourierService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,24 +19,11 @@ public class CourierController {
 
     private final CourierService courierService;
 
-
-    @PostMapping("/start/{userId}")
-    public ResponseEntity<Void> startWork(@RequestBody StartWorkRequestDto request,
-                                          @PathVariable UUID userId) {
-        courierService.startWork(request, userId);
-        return ResponseEntity.ok().build();
-    }
-
-    //    возвращает всю инфу по курьеру, используется в том числе для других сервисов
-
-    // как выглядит для курьера запрос: тыкает кнопку, отправляются его координаты,
-// транспорт и статус в order, нет делается запрос сюда, уже сделал,
-// там логика работает по расстояниям - выдаются ближайшие заказы
+    //    возвращает всю инфу по курьеру, используется в том числе для других сервисах
     @GetMapping("/{courierId}")
     public GetCourierResponseDto getCourier(@PathVariable UUID courierId) {
         return courierService.getCourier(courierId);
     }
-
 
     //    возвращает доступных по статусу и расстоянию курьеров для нового заказа
 //    запрос делает сервис заказов при появлении нового заказа,
@@ -56,23 +41,16 @@ public class CourierController {
                 orderId);
     }
 
-//    курьер хочет получить маршрут до ресторана и до клиента, тыкает на кнопку(еще не принял заказ)
-//    также может кликать на кнопку эту, когда уже работает с заказом.
-
-//    надо как то определить, когда 3 координаты, а когда 2
-//    если у заказа статус взят из ресторана, и следующие статусы - 2 точки, иначе 3
-
-    //  кнопка построить маршрут: если курьер не взял заказ, взял(до получения из ресторана), взял(после получения)
-//   сюда прилитает из телефона курьера информация о заказе, в том числе коодинаты рестика и клиента, и курьера
+    //    получает маршрут для доставки заказа
     @GetMapping("/route/{orderId}")
     public String getRoute(@RequestParam double latitudeClient,
-                          @RequestParam double longitudeClient,
-                          @RequestParam double latitudeRestaurant,
-                          @RequestParam double longitudeRestaurant,
-                          @RequestParam double latitudeCourier,
-                          @RequestParam double longitudeCourier,
-                          @RequestParam UUID courierId,
-                          @PathVariable UUID orderId) throws Exception {
+                           @RequestParam double longitudeClient,
+                           @RequestParam double latitudeRestaurant,
+                           @RequestParam double longitudeRestaurant,
+                           @RequestParam double latitudeCourier,
+                           @RequestParam double longitudeCourier,
+                           @RequestParam UUID courierId,
+                           @PathVariable UUID orderId) throws Exception {
 
         String route = courierService.getRoute(longitudeCourier, latitudeCourier,
                 longitudeRestaurant, latitudeRestaurant,
@@ -81,8 +59,24 @@ public class CourierController {
         return route;
 
     }
+
+    //   может прийти как из сервиса заказов, так и из мобилки курьера, в зависимости от статуса курьера
+//    если из заказов, то добавляется orderId, хотя и из мобилки можно, если есть
+    @PutMapping("/change_status/{courierId}")
+    public ResponseEntity<Void> changeCourierStatus(@RequestBody RouteEventStatusRequestDto request,
+                                                    @PathVariable UUID courierId) {
+        courierService.changeCourierStatus(courierId, request);
+        return ResponseEntity.ok().build();
+    }
+
+
 //    estimatedArrivalTime
 
+
+//    todo: 1. проверить функционал готового кода
+//    todo: 2 добавить доп функционал работы с картами, геозонами
+    //    todo: 2. добавить redis для сохранения в кеш текущего положения курьера(последняя точка из locationPoint)
+//    todo: 3. security и тд по документу
 
 //  специально для повторяющихся запросов, еще бы редис вставить  getRoute(coordintes, )
 }

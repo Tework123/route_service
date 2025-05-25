@@ -1,13 +1,10 @@
 package com.ex.route_service.entity;
 
-import com.ex.route_service.enums.CourierRouteEventStatus;
+import com.ex.route_service.enums.RouteEventStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 // Если хочешь логировать действия курьера и статус маршрута — пригодится.
@@ -17,29 +14,31 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "courier_route_event")
-public class CourierRouteEvent {
+@Table(name = "route_event")
+public class RouteEvent {
 
     @Id
-    @Column(name = "courier_route_event_id", nullable = false, updatable = false)
-    private UUID courierRouteEventId;
+    @Column(name = "route_event_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
+    private UUID routeEventId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "courier_id")
     private Courier courier;
 
-    @Column(name = "location", columnDefinition = "geometry(Point, 4326)", nullable = false)
-    private Point location;
+//    у ивента всегда есть координаты
+    @OneToOne(optional = false)
+    @JoinColumn(name = "location_point_id", referencedColumnName = "location_point_id" , nullable = false)
+    private LocationPoint locationPoint;
 
     //    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
     @Column(name = "order_id", nullable = true)
     private UUID orderId;
 
     @Enumerated(EnumType.STRING)
-    private CourierRouteEventStatus courierRouteEventStatus;
+    private RouteEventStatus routeEventStatus;
 
     /**
-     * Время создания записи о ивенте на смартфоне.
+     * Время создания записи об ивенте на смартфоне.
      */
     @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;

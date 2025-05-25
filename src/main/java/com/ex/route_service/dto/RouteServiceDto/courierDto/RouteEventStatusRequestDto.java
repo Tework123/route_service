@@ -1,10 +1,13 @@
 package com.ex.route_service.dto.RouteServiceDto.courierDto;
 
+
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
 import com.ex.route_service.enums.CourierStatus;
-import com.ex.route_service.enums.TransportType;
+import com.ex.route_service.enums.OrderStatus;
+import com.ex.route_service.enums.RouteEventStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -12,9 +15,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetCourierResponseDto {
-    private UUID courierId;
-    private TransportType transportType;
-    private CourierStatus courierStatus;
-    private LocationDto currentLocation;
+public class RouteEventStatusRequestDto {
+    private RouteEventStatus routeEventStatus;
+    private UUID orderId;
+    private LocationDto locationDto;
 }
