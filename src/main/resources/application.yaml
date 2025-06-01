@@ -11,12 +11,19 @@ spring:
     jpa:
       hibernate:
         ddl-auto: validate
-      show-sql: false
+      show-sql: true
+      properties:
+        hibernate.format_sql: true
       # properties:
       #   hibernate:
       #     generate_statistics: true
     liquibase:
       enabled: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 #logging:
 #  level:

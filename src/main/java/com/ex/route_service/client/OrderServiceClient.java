@@ -2,13 +2,13 @@ package com.ex.route_service.client;
 
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
 import lombok.AllArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -21,8 +21,19 @@ public class OrderServiceClient {
 
     //    вообще надо вынести в application.yaml, local, и тд
 
-
+    //    mock вызова сервиса заказов
+    @Deprecated
     public OrderResponseDto getOrder(UUID orderId) {
+        if (orderId == null) {
+            return null;
+        }
+        return OrderResponseDto.builder()
+                .orderId(orderId)
+                .orderStatus("DELIVERING")
+                .build();
+    }
+
+    public OrderResponseDto getOrder1(UUID orderId) {
         if (orderId == null) {
             return null;
         }

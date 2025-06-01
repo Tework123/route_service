@@ -1,6 +1,7 @@
 package com.ex.route_service.entity;
 
 import com.ex.route_service.enums.RouteEventStatus;
+import com.ex.route_service.enums.WeatherStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,9 +26,9 @@ public class RouteEvent {
     @JoinColumn(name = "courier_id")
     private Courier courier;
 
-//    у ивента всегда есть координаты
+    //    у ивента всегда есть координаты
     @OneToOne(optional = false)
-    @JoinColumn(name = "location_point_id", referencedColumnName = "location_point_id" , nullable = false)
+    @JoinColumn(name = "location_point_id", referencedColumnName = "location_point_id", nullable = false)
     private LocationPoint locationPoint;
 
     //    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
@@ -36,6 +37,9 @@ public class RouteEvent {
 
     @Enumerated(EnumType.STRING)
     private RouteEventStatus routeEventStatus;
+
+    @Enumerated(EnumType.STRING)
+    private WeatherStatus weatherStatus;
 
     /**
      * Время создания записи об ивенте на смартфоне.
@@ -48,6 +52,7 @@ public class RouteEvent {
 
     @Column(name = "message")
     private String message;
+
 
     @PrePersist
     public void prePersist() {

@@ -1,25 +1,25 @@
 package com.ex.route_service.service;
 
 import com.ex.route_service.client.OpenRouteClient;
+import com.ex.route_service.dto.OpenRouteServiceDto.GetRouteResponseDto;
 import com.ex.route_service.enums.TransportType;
-import lombok.AllArgsConstructor;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OpenRouteService {
 
     private final OpenRouteClient openRouteClient;
 
 
-    public String getRoute(Double longitudeCourier, Double latitudeCourier,
-                           Double longitudeRestaurant, Double latitudeRestaurant,
-                           Double longitudeClient, Double latitudeClient,
-                           TransportType transportType) {
+    public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
+                                        Double longitudeRestaurant, Double latitudeRestaurant,
+                                        Double longitudeClient, Double latitudeClient,
+                                        TransportType transportType) {
         List<List<Double>> coordinates;
 
         coordinates = List.of(
@@ -31,7 +31,7 @@ public class OpenRouteService {
         return openRouteClient.getRoute(coordinates, transportType);
     }
 
-    public String getRoute(Double longitudeCourier, Double latitudeCourier,
+    public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
                            Double longitudeClient, Double latitudeClient,
                            TransportType transportType) {
         List<List<Double>> coordinates;

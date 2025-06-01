@@ -24,10 +24,10 @@ public class CourierMapper {
 
     public GetCouriersForOrderResponseDto toResponseDto(Map<String, Object> row, UUID orderId) {
         return GetCouriersForOrderResponseDto.builder()
-                .courierId(UUID.fromString((String) row.get("courier_id")))
+                .courierId((UUID) row.get("courier_id"))
                 .transportType(TransportType.valueOf((String) row.get("transport_type")))
                 .distance(((Number) row.get("total_distance")).doubleValue())
-                .courierStatus(CourierStatus.READY) // можно подтягивать из row, если добавишь
+                .courierStatus(CourierStatus.READY)
                 .currentLocation(LocationDto.builder()
                                 .longitude(((Number) row.get("longitude")).doubleValue())
                                 .latitude(((Number) row.get("latitude")).doubleValue())

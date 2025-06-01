@@ -1,6 +1,7 @@
 package com.ex.route_service.controller;
 
 
+import com.ex.route_service.dto.OpenRouteServiceDto.GetRouteResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
@@ -29,34 +30,31 @@ public class CourierController {
 //    запрос делает сервис заказов при появлении нового заказа,
 //    чтобы отправить уведомления незанятым ближайшим курьерами
     @GetMapping("/order/{orderId}")
-    public List<GetCouriersForOrderResponseDto> getCouriersForOrder(@RequestParam double latitudeClient,
-                                                                    @RequestParam double longitudeClient,
-                                                                    @RequestParam double latitudeRestaurant,
-                                                                    @RequestParam double longitudeRestaurant,
-                                                                    @PathVariable UUID orderId) {
-        return courierService.getCouriersForOrder(latitudeClient,
-                longitudeClient,
-                latitudeRestaurant,
+    public List<GetCouriersForOrderResponseDto> getCouriersForOrder(
+            @RequestParam double longitudeClient,
+            @RequestParam double latitudeClient,
+            @RequestParam double longitudeRestaurant,
+            @RequestParam double latitudeRestaurant,
+            @PathVariable UUID orderId) {
+        return courierService.getCouriersForOrder(longitudeClient,
+                latitudeClient,
                 longitudeRestaurant,
+                latitudeRestaurant,
                 orderId);
     }
 
     //    получает маршрут для доставки заказа
     @GetMapping("/route/{orderId}")
-    public String getRoute(@RequestParam double latitudeClient,
-                           @RequestParam double longitudeClient,
-                           @RequestParam double latitudeRestaurant,
-                           @RequestParam double longitudeRestaurant,
-                           @RequestParam double latitudeCourier,
-                           @RequestParam double longitudeCourier,
-                           @RequestParam UUID courierId,
-                           @PathVariable UUID orderId) throws Exception {
+    public GetRouteResponseDto getRoute(@RequestParam double latitudeClient,
+                                        @RequestParam double longitudeClient,
+                                        @RequestParam double latitudeRestaurant,
+                                        @RequestParam double longitudeRestaurant,
+                                        @RequestParam UUID courierId,
+                                        @PathVariable UUID orderId) throws Exception {
 
-        String route = courierService.getRoute(longitudeCourier, latitudeCourier,
+        return courierService.getRoute(
                 longitudeRestaurant, latitudeRestaurant,
                 longitudeClient, latitudeClient, courierId, orderId);
-
-        return route;
 
     }
 

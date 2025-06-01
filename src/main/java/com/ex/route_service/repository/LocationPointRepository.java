@@ -1,11 +1,13 @@
 package com.ex.route_service.repository;
 
 import com.ex.route_service.entity.LocationPoint;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -14,12 +16,12 @@ import java.util.UUID;
 @Repository
 public interface LocationPointRepository extends JpaRepository<LocationPoint, UUID> {
 
-    @Query(
-            value = "SELECT * FROM location_point WHERE work_shift_session_id = :workShiftSessionId ORDER BY time_create DESC LIMIT 1",
-            nativeQuery = true
-    )
-    LocationPoint findLastByWorkShiftSessionId(@Param("workShiftSessionId") UUID workShiftSessionId);
-
+    @Query("""
+    SELECT lp FROM LocationPoint lp
+    WHERE lp.courier.courierId = :courierId
+    ORDER BY lp.timestamp DESC
+""")
+    List<LocationPoint> findLatestByCourierId(@Param("courierId") UUID courierId, Pageable pageable);
 
     /**
      * Возвращает список координат для заданного устройства за указанный временной интервал.

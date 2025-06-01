@@ -15,43 +15,50 @@ public class CourierJdbcRepository {
     }
 
     public List<Map<String, Object>> findNearbyCouriersRaw(
-            double latitudeClient,
-            double longitudeClient,
-            double latitudeRestaurant,
-            double longitudeRestaurant,
+            double longitudeClient, double latitudeClient,
+            double longitudeRestaurant, double latitudeRestaurant,
             double maxFootDistance,
             double maxBikeDistance,
             double maxCarDistance
     ) {
         String sql = """
-                SELECT courier_id, transport_type,
-                       ST_Y(current_location) AS latitude,
-                       ST_X(current_location) AS longitude,
-                       (
-                           ST_DistanceSphere(current_location, ST_MakePoint(?, ?)) +
-                           ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
-                       ) AS total_distance
-                FROM courier
-                WHERE courier_status = 'READY'
-                  AND (
-                    (transport_type = 'foot' AND (
-                        ST_DistanceSphere(current_location, ST_MakePoint(?, ?)) +
-                        ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
-                    ) < ?)
-                    OR
-                    (transport_type = 'bike' AND (
-                        ST_DistanceSphere(current_location, ST_MakePoint(?, ?)) +
-                        ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
-                    ) < ?)
-                    OR
-                    (transport_type = 'car' AND (
-                        ST_DistanceSphere(current_location, ST_MakePoint(?, ?)) +
-                        ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
-                    ) < ?)
-                  )
-                ORDER BY total_distance
-                LIMIT 20
-            """;
+        SELECT c.courier_id, c.transport_type,
+               ST_X(lp.location) AS longitude,
+               ST_Y(lp.location) AS latitude,
+
+               (
+                   ST_DistanceSphere(lp.location, ST_MakePoint(?, ?)) +
+                   ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
+               ) AS total_distance
+
+        FROM courier c
+        JOIN (
+            SELECT DISTINCT ON (courier_id)
+                   courier_id, location, timestamp
+              FROM location_point
+             ORDER BY courier_id, timestamp DESC
+        ) lp ON lp.courier_id = c.courier_id
+
+        WHERE c.courier_status = 'READY'
+          AND (
+            (c.transport_type = 'FOOT' AND (
+                ST_DistanceSphere(lp.location, ST_MakePoint(?, ?)) +
+                ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
+            ) < ?)
+            OR
+            (c.transport_type = 'BIKE' AND (
+                ST_DistanceSphere(lp.location, ST_MakePoint(?, ?)) +
+                ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
+            ) < ?)
+            OR
+            (c.transport_type = 'CAR' AND (
+                ST_DistanceSphere(lp.location, ST_MakePoint(?, ?)) +
+                ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(?, ?))
+            ) < ?)
+          )
+        ORDER BY total_distance
+        LIMIT 20
+        """;
 
         return jdbcTemplate.queryForList(sql,
                 // Параметры в том же порядке, как и ? в SQL
