@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Tework123
+      changes:
+        - sql:
+            sql: |
+              CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+  - changeSet:
+      id: 2
+      author: Tework123
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE courier (
+                  courier_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                  transport_type VARCHAR(255) NOT NULL,
+                  courier_status VARCHAR(255)
+              );
+
+  - changeSet:
+      id: 3
+      author: Tework123
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE location_point (
+                  location_point_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                  courier_id UUID,
+                  location geometry(Point, 4326) NOT NULL,
+                  timestamp TIMESTAMP NOT NULL,
+                  time_create TIMESTAMP NOT NULL DEFAULT now(),
+                  CONSTRAINT fk_location_point_courier FOREIGN KEY (courier_id)
+                      REFERENCES courier(courier_id) ON DELETE SET NULL
+              );
+
+  - changeSet:
+      id: 4
+      author: Tework123
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE route_event (
+                  route_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                  courier_id UUID,
+                  location_point_id UUID NOT NULL UNIQUE,
+                  order_id UUID,
+                  route_event_status VARCHAR(255),
+                  timestamp TIMESTAMP NOT NULL,
+                  time_create TIMESTAMP NOT NULL DEFAULT now(),
+                  message VARCHAR(1024),
+                  CONSTRAINT fk_route_event_courier FOREIGN KEY (courier_id)
+                      REFERENCES courier(courier_id) ON DELETE SET NULL,
+                  CONSTRAINT fk_route_event_location_point FOREIGN KEY (location_point_id)
+                      REFERENCES location_point(location_point_id) ON DELETE CASCADE
+              );

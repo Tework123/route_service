@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 28_05_2025_add_weather_field
+      author: your_name
+      changes:
+        - addColumn:
+            tableName: route_event
+            columns:
+              - column:
+                  name: weather_status
+                  type: varchar(64)
+                  constraints:
+                    nullable: true
