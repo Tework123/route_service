@@ -1,5 +1,6 @@
 package com.ex.route_service.service;
 
+import com.ex.route_service.client.FinanceServiceClient;
 import com.ex.route_service.client.OrderServiceClient;
 import com.ex.route_service.dto.OpenRouteServiceDto.GetRouteResponseDto;
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
@@ -41,6 +42,7 @@ public class CourierService {
     private final RouteEventService routeEventService;
     private final LocationPointMapper locationPointMapper;
     private final OpenWeatherMapService openWeatherMapService;
+    private final FinanceServiceClient financeServiceClient;
 
     public GetCourierResponseDto getCourier(UUID courierId) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
@@ -141,7 +143,7 @@ public class CourierService {
         } else if (RouteEventStatus.ORDER_DELIVERED.equals(statusRequestDto.getRouteEventStatus())) {
             newCourierStatus = CourierStatus.READY;
 
-            routeEventService.sendRouteEventsForOrder(statusRequestDto.getOrderId(), courierId);
+            routeEventService.sendRouteEvents(statusRequestDto.getOrderId(), courierId);
 //            Todo отправляем всю инфу о логах заказа в сервис финансов
 
         } else if (RouteEventStatus.SHIFT_STARTED.equals(statusRequestDto.getRouteEventStatus())) {

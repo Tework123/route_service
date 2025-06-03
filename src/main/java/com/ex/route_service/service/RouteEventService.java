@@ -1,6 +1,8 @@
 package com.ex.route_service.service;
 
 
+import com.ex.route_service.client.FinanceServiceClient;
+import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.entity.RouteEvent;
@@ -20,6 +22,7 @@ public class RouteEventService {
 
     private final RouteEventRepository routeEventRepository;
     private final RouteEventMapper routeEventMapper;
+    private final FinanceServiceClient financeServiceClient;
 
     public void save(RouteEventStatus routeEventStatus, UUID orderId, Courier courier, LocationPoint locationPoint) {
         RouteEvent routeEvent = routeEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, null);
@@ -31,8 +34,10 @@ public class RouteEventService {
         routeEventRepository.save(routeEvent);
     }
 
-    public void sendRouteEventsForOrder(UUID orderId, UUID courierId) {
+    public void sendRouteEvents(UUID orderId, UUID courierId) {
         List<RouteEvent> routeEvents = routeEventRepository.findAllByOrderId(orderId);
+        SendRouteEventsRequestDto requestDto = RouteEventMapper.toSendRouteEventsRequestDto(routeEvents, courierId, orderId);
+        financeServiceClient.sendRouteEvents(requestDto);
 
 //TODO маппим ивенты, заказ и курьера и отправляем в сервис
 // финансов(спросить у gpt как высчитывать между статусами время, как оплачивать)

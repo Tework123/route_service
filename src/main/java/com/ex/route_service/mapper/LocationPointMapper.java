@@ -1,24 +1,20 @@
 package com.ex.route_service.mapper;
 
 import com.ex.route_service.Utils.GeometryUtils;
+import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.CreateLocationPointDto;
-import com.ex.route_service.dto.RouteServiceDto.locationPointDto.GetLastLocationPointDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.entity.RouteEvent;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
 public class LocationPointMapper {
 
-    public LocationPoint toEntity(LocationDto dto, Courier courier, RouteEvent routeEvent) {
+    public static LocationPoint toEntity(LocationDto dto, Courier courier, RouteEvent routeEvent) {
         if (dto == null) return null;
 
         Point point = GeometryUtils.toPoint(dto.getLatitude(), dto.getLongitude());
@@ -49,6 +45,16 @@ public class LocationPointMapper {
 
         return locationPointDto;
 
+    }
+
+    public static SendRouteEventsRequestDto.LocationPointDto toDto(LocationPoint locationPoint){
+        return SendRouteEventsRequestDto.LocationPointDto.builder()
+                .locationPointId(locationPoint.getLocationPointId())
+                .longitude(locationPoint.getLocation().getX())
+                .latitude(locationPoint.getLocation().getY())
+                .timeCreate(locationPoint.getTimeCreate())
+                .timestamp(locationPoint.getTimestamp())
+                .build();
     }
 
 }
