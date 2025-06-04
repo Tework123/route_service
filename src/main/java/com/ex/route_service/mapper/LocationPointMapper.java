@@ -5,12 +5,16 @@ import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.CreateLocationPointDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationResponseDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.entity.RouteEvent;
 import org.locationtech.jts.geom.Point;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LocationPointMapper {
 
@@ -47,7 +51,7 @@ public class LocationPointMapper {
 
     }
 
-    public static SendRouteEventsRequestDto.LocationPointDto toDto(LocationPoint locationPoint){
+    public static SendRouteEventsRequestDto.LocationPointDto toDto(LocationPoint locationPoint) {
         return SendRouteEventsRequestDto.LocationPointDto.builder()
                 .locationPointId(locationPoint.getLocationPointId())
                 .longitude(locationPoint.getLocation().getX())
@@ -55,6 +59,21 @@ public class LocationPointMapper {
                 .timeCreate(locationPoint.getTimeCreate())
                 .timestamp(locationPoint.getTimestamp())
                 .build();
+    }
+
+    public static List<LocationResponseDto> toLocationResponseDtoFromEntity(List<LocationPoint> locationPoints) {
+        return locationPoints == null ? new ArrayList<>()
+                : locationPoints.stream().map(LocationPointMapper::toLocationResponseDtoFromEntity).collect(Collectors.toList());
+    }
+
+    public static LocationResponseDto toLocationResponseDtoFromEntity(LocationPoint locationPoint) {
+        if (locationPoint == null) return null;
+        return LocationResponseDto.builder()
+                .longitude(locationPoint.getLocation().getX())
+                .latitude(locationPoint.getLocation().getY())
+                .timestamp(locationPoint.getTimestamp())
+                .build();
+
     }
 
 }

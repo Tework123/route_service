@@ -14,8 +14,6 @@ import com.ex.route_service.enums.OrderStatus;
 import com.ex.route_service.enums.RouteEventStatus;
 import com.ex.route_service.enums.WeatherStatus;
 import com.ex.route_service.mapper.CourierMapper;
-import com.ex.route_service.mapper.LocationPointMapper;
-import com.ex.route_service.mapper.RouteEventMapper;
 import com.ex.route_service.repository.CourierJdbcRepository;
 import com.ex.route_service.repository.CourierRepository;
 import com.ex.route_service.repository.RouteEventRepository;
@@ -33,14 +31,12 @@ import java.util.UUID;
 public class CourierService {
     private final CourierRepository courierRepository;
     private final RouteEventRepository routeEventRepository;
-    private final RouteEventMapper routeEventMapper;
     private final CourierMapper courierMapper;
     private final OpenRouteService openRouteService;
     private final CourierJdbcRepository courierJdbcRepository;
     private final OrderServiceClient orderServiceClient;
     private final LocationPointService locationPointService;
     private final RouteEventService routeEventService;
-    private final LocationPointMapper locationPointMapper;
     private final OpenWeatherMapService openWeatherMapService;
     private final FinanceServiceClient financeServiceClient;
 

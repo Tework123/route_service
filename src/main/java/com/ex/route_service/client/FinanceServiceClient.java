@@ -1,13 +1,16 @@
 package com.ex.route_service.client;
 
+import com.ex.route_service.AppStartupLogger;
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
@@ -17,6 +20,8 @@ import java.util.UUID;
 public class FinanceServiceClient {
 
     private final RestTemplate restTemplate;
+    private static final Logger log = LoggerFactory.getLogger(AppStartupLogger.class);
+
 
     private final RequestBuilder requestBuilder;
 
@@ -34,11 +39,8 @@ public class FinanceServiceClient {
                 .build();
     }
 
-//   TODO  надо ли возвращать что-то? для логирования?
-    public OrderResponseDto sendRouteEvents(SendRouteEventsRequestDto requestDto) {
-        if (requestDto == null) {
-            return null;
-        }
+    //   TODO  надо ли возвращать что-то? для логирования?
+    public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
         String url = requestBuilder.buildUrl(
                 "http",
                 "finance_service:8080",
@@ -50,13 +52,22 @@ public class FinanceServiceClient {
         HttpHeaders headers = requestBuilder.buildHeaders(null);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<OrderResponseDto> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                OrderResponseDto.class
-        );
+        log.info("Начат процесс отправки ивентов в сервис финансов. orderId={}, courierId={}", requestDto.getOrderId(), requestDto.getCourierId());
 
-        return response.getBody();
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    OrderResponseDto.class
+            );
+
+            log.info("Ивенты отправлены в сервис финансов. orderId={}, courierId={}",
+                    requestDto.getOrderId(), requestDto.getCourierId());
+        } catch (RestClientException ex) {
+            log.info("Ошибка при отправке ивентов в сервис финансов. orderId={}, courierId={}," +
+                    " причина={}", requestDto.getOrderId(), requestDto.getCourierId(), ex.getMessage()
+            );
+        }
     }
 }

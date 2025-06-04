@@ -21,16 +21,15 @@ import java.util.UUID;
 public class RouteEventService {
 
     private final RouteEventRepository routeEventRepository;
-    private final RouteEventMapper routeEventMapper;
     private final FinanceServiceClient financeServiceClient;
 
     public void save(RouteEventStatus routeEventStatus, UUID orderId, Courier courier, LocationPoint locationPoint) {
-        RouteEvent routeEvent = routeEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, null);
+        RouteEvent routeEvent = RouteEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, null);
         routeEventRepository.save(routeEvent);
     }
 
     public void save(RouteEventStatus routeEventStatus, UUID orderId, Courier courier, LocationPoint locationPoint, WeatherStatus weatherStatus) {
-        RouteEvent routeEvent = routeEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, weatherStatus);
+        RouteEvent routeEvent = RouteEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, weatherStatus);
         routeEventRepository.save(routeEvent);
     }
 
@@ -38,10 +37,6 @@ public class RouteEventService {
         List<RouteEvent> routeEvents = routeEventRepository.findAllByOrderId(orderId);
         SendRouteEventsRequestDto requestDto = RouteEventMapper.toSendRouteEventsRequestDto(routeEvents, courierId, orderId);
         financeServiceClient.sendRouteEvents(requestDto);
-
-//TODO маппим ивенты, заказ и курьера и отправляем в сервис
-// финансов(спросить у gpt как высчитывать между статусами время, как оплачивать)
-
     }
 
 
