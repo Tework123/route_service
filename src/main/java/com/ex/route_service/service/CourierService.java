@@ -116,7 +116,6 @@ public class CourierService {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
-//        TODO поменять генерацию UUID на стороне hibernate, ничего не сохраняется, дроп бд или?
         LocationPoint locationPoint = locationPointService.save(statusRequestDto.getLocationDto(), courierId);
 
         CourierStatus newCourierStatus = null;

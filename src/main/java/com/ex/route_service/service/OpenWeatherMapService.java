@@ -30,17 +30,14 @@ public class OpenWeatherMapService {
 
         WeatherStatus baseStatus = getWeatherStatus(weatherCode);
 
-        // Температурные уточнения
         boolean isSevereCold = tempCelsius < -12;
         boolean isMildCold = tempCelsius >= -12 && tempCelsius <= -6;
         boolean isHot = tempCelsius > 30;
 
-        // Ветер
         boolean isModerateWind = windSpeed >= 8 && windSpeed < 12;
         boolean isStrongWind = windSpeed >= 12 && windSpeed <= 15;
         boolean isStormWind = windSpeed > 15;
 
-        // Комбинированные условия
         if ((WeatherStatus.SNOW_LIGHT.equals(baseStatus)
                 || WeatherStatus.SNOW_MODERATE.equals(baseStatus)
                 || WeatherStatus.SNOW_HEAVY.equals(baseStatus))

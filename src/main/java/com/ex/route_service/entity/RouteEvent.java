@@ -19,7 +19,8 @@ import java.util.UUID;
 public class RouteEvent {
 
     @Id
-    @Column(name = "route_event_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
+    @GeneratedValue
+    @Column(name = "route_event_id")
     private UUID routeEventId;
 
     @ManyToOne(fetch = FetchType.EAGER)

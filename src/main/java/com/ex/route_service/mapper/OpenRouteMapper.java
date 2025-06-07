@@ -18,12 +18,10 @@ public class OpenRouteMapper {
                     .way_points(route.getWayPoints())
                     .build();
 
-            // geometry - нужно конвертировать строку geometry в объект Geometry
-            // для примера здесь null, но обычно нужна декодировка polyline в List<List<Double>>
             GetRouteResponseDto.Geometry geometry = null;
 
             return GetRouteResponseDto.Feature.builder()
-                    .type("Feature") // обычно фиксированное значение
+                    .type("Feature")
                     .bbox(route.getBbox())
                     .geometry(geometry)
                     .properties(props)

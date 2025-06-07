@@ -13,6 +13,10 @@ replay_pid*
 ##############################
 ## MySpring
 ##############################
+application-local.yaml
+docker-compose/docker-compose-local.yaml
+docker-compose/redis-data
+docker-compose/route_service.sql
 
 applicationTest.properties
 applicationTest.txt
