@@ -19,8 +19,6 @@ import java.util.UUID;
 @RequestMapping("/location")
 @AllArgsConstructor
 public class LocationPointController {
-    //TODO изменить название, этот контроллер принимает координаты курьера и пишет в базу
-//     надо менять как у курьера последнюю точку, так и добавлять запись для истории
 
     private final LocationPointService locationPointService;
 
@@ -44,7 +42,7 @@ public class LocationPointController {
     }
 
     //    добавить параметры поиска: промежутки времени.
-    @GetMapping("/{courierId}")
+    @GetMapping("/{courierId}/points")
     public List<LocationResponseDto> getLocationPoints(
             @PathVariable UUID courierId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
@@ -52,6 +50,4 @@ public class LocationPointController {
     ) {
         return locationPointService.getLocationPoints(courierId, fromDateTime, toDateTime);
     }
-//    TODO Получение маршрута устройства(сделать завтра), сделал записи в гугл,
-//     норм логика, реализовать ручное, автоматическое с 30 минутами
 }

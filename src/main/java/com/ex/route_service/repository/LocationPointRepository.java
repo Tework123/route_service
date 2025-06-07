@@ -16,12 +16,13 @@ import java.util.UUID;
 @Repository
 public interface LocationPointRepository extends JpaRepository<LocationPoint, UUID> {
 
-    @Query("""
-    SELECT lp 
-    FROM LocationPoint lp 
-    WHERE lp.courier.courierId = :courierId 
-    ORDER BY lp.timestamp DESC
-    """)
+    @Query(value = """
+    SELECT * 
+    FROM location_point 
+    WHERE courier_id = :courierId 
+    ORDER BY timestamp DESC 
+    LIMIT 1
+""", nativeQuery = true)
     LocationPoint findTopByCourierId(@Param("courierId") UUID courierId);
 
     /**

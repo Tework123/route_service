@@ -3,42 +3,30 @@ spring:
     name: route_service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/route_service_db
-    username: tework
-    password: ksflkOkas23fl9saflKdl349sLfsk1
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       auto-commit: false
-    jpa:
-      hibernate:
-        ddl-auto: validate
-      show-sql: true
-      properties:
-        hibernate.format_sql: true
-      # properties:
-      #   hibernate:
-      #     generate_statistics: true
-    liquibase:
-      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
+      hibernate.format_sql: true
+
+  liquibase:
+    enabled: true
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        SQL:
-#        type: TRACE
-#    springframework:
-#      security: DEBUG
-#    root: INFO
-#    com:
-#      example: DEBUG
-#  pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n" # Формат вывода в консоль
-#  file:
-#    name: logs/myapp.log
-#    max-size: 10MB
-#    max-history: 30
+
+openrouteservice:
+  api-key: ${OPENROUTESERVICE_API_KEY}
+
+openweathermap:
+  api-key: ${openrouteservice_API_KEY}

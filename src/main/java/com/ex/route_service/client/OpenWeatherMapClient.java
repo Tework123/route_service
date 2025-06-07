@@ -2,6 +2,7 @@ package com.ex.route_service.client;
 
 import com.ex.route_service.dto.OpenWeatherMapDto.OpenWeatherResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +14,8 @@ public class OpenWeatherMapClient {
     private final RestTemplate restTemplate;
     private final RequestBuilder requestBuilder;
 
-    private static final String API_KEY = "aa0a32f4341403aa09700231c23386ce";
+    @Value("${openweathermap.api-key}")
+    private String API_KEY;
 
     public OpenWeatherResponseDto getWeather(Double longitude, Double latitude){
 

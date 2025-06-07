@@ -34,13 +34,8 @@ public class OpenRouteService {
     public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
                            Double longitudeClient, Double latitudeClient,
                            TransportType transportType) {
-        List<List<Double>> coordinates;
-
-        coordinates = List.of(
-                List.of(longitudeCourier, latitudeCourier),
-                List.of(longitudeClient, latitudeClient)
-        );
-
-        return openRouteClient.getRoute(coordinates, transportType);
+        return openRouteClient.getRoute(longitudeCourier, latitudeCourier,
+                longitudeClient, latitudeClient,
+                transportType);
     }
 }

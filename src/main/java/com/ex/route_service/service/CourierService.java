@@ -7,6 +7,7 @@ import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationResponseDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.enums.CourierStatus;
@@ -74,7 +75,6 @@ public class CourierService {
         return courierMapper.toListResponseDto(rawRows, orderId);
     }
 
-    //    кажется надо отдельный routeService создать, не курьер и не openRoute
     public GetRouteResponseDto getRoute(
             Double longitudeRestaurant, Double latitudeRestaurant,
             Double longitudeClient, Double latitudeClient,
@@ -83,7 +83,7 @@ public class CourierService {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
-        LocationPoint lastLocationPoint = locationPointService.getLastLocationPoint(courierId);
+        LocationResponseDto lastLocationPoint = locationPointService.getLastLocationPoint(courierId);
 
 //      получаем статус заказа из сервиса заказов
         OrderResponseDto orderDto = orderServiceClient.getOrder(orderId);
@@ -94,13 +94,13 @@ public class CourierService {
 
         GetRouteResponseDto route;
         if (status == OrderStatus.CONFIRMED || status == OrderStatus.PREPARING || status == OrderStatus.READY_FOR_PICKUP) {
-            route = openRouteService.getRoute(lastLocationPoint.getLocation().getX(),
-                    lastLocationPoint.getLocation().getY(),
+            route = openRouteService.getRoute(lastLocationPoint.getLongitude(),
+                    lastLocationPoint.getLatitude(),
                     longitudeRestaurant, latitudeRestaurant,
                     longitudeClient, latitudeClient, courier.getTransportType());
         } else {
-            route = openRouteService.getRoute(lastLocationPoint.getLocation().getX(),
-                    lastLocationPoint.getLocation().getY(),
+            route = openRouteService.getRoute(lastLocationPoint.getLongitude(),
+                    lastLocationPoint.getLatitude(),
                     longitudeClient, latitudeClient, courier.getTransportType());
         }
 
@@ -111,7 +111,6 @@ public class CourierService {
     //        курьер берет заказ(хочет его доставить), в сервис заказов улетает запрос, добавляется поле id курьера к заказу
 //        из сервиса заказов летит запрос сюда на изменение статусов:
 //    или курьер совершает другое действие с заказом
-//    TODO поделить каждый статус на отдельный приватный метод
     @Transactional
     public void changeCourierStatus(UUID courierId, RouteEventStatusRequestDto statusRequestDto) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
@@ -138,9 +137,7 @@ public class CourierService {
 
         } else if (RouteEventStatus.ORDER_DELIVERED.equals(statusRequestDto.getRouteEventStatus())) {
             newCourierStatus = CourierStatus.READY;
-
             routeEventService.sendRouteEvents(statusRequestDto.getOrderId(), courierId);
-//            Todo отправляем всю инфу о логах заказа в сервис финансов
 
         } else if (RouteEventStatus.SHIFT_STARTED.equals(statusRequestDto.getRouteEventStatus())) {
             if (courier.getCourierStatus().equals(CourierStatus.FINISHED)) {

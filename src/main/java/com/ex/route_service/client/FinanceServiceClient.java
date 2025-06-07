@@ -25,9 +25,6 @@ public class FinanceServiceClient {
 
     private final RequestBuilder requestBuilder;
 
-    //    вообще надо вынести в application.yaml, local, и тд
-
-    //    mock вызова сервиса заказов
     @Deprecated
     public OrderResponseDto getOrder(UUID orderId) {
         if (orderId == null) {
@@ -39,7 +36,6 @@ public class FinanceServiceClient {
                 .build();
     }
 
-    //   TODO  надо ли возвращать что-то? для логирования?
     public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
         String url = requestBuilder.buildUrl(
                 "http",
@@ -59,9 +55,8 @@ public class FinanceServiceClient {
                     url,
                     HttpMethod.POST,
                     entity,
-                    OrderResponseDto.class
+                    SendRouteEventsRequestDto.class
             );
-
             log.info("Ивенты отправлены в сервис финансов. orderId={}, courierId={}",
                     requestDto.getOrderId(), requestDto.getCourierId());
         } catch (RestClientException ex) {
