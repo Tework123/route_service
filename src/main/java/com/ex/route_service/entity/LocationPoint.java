@@ -21,7 +21,8 @@ import java.util.UUID;
 public class LocationPoint {
 
     @Id
-    @Column(name = "location_point_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
+    @GeneratedValue
+    @Column(name = "location_point_id")
     private UUID locationPointId;
 
     @ManyToOne(fetch = FetchType.EAGER)

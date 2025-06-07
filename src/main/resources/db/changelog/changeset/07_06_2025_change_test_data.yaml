@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_test_data_002
+      author: yourname
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Вставка точки с координатами Москвы (долгота, широта)
+              INSERT INTO location_point (location_point_id, courier_id, location, timestamp, time_create)
+              VALUES
+                (
+                  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2',
+                  '11111111-1111-1111-1111-111111111111',
+                  ST_SetSRID(ST_MakePoint(37.58768, 55.77503), 4326),
+                  '2025-05-26 11:00:00',
+                  NOW()
+                );

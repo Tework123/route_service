@@ -19,7 +19,8 @@ import java.util.UUID;
 public class Courier {
 
     @Id
-    @Column(name = "courier_id", nullable = false, updatable = false, columnDefinition = "uuid DEFAULT gen_random_uuid()")
+    @GeneratedValue
+    @Column(name = "courier_id")
     private UUID courierId;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,

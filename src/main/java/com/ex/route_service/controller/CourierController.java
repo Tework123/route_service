@@ -2,6 +2,7 @@ package com.ex.route_service.controller;
 
 
 import com.ex.route_service.dto.OpenRouteServiceDto.GetRouteResponseDto;
+import com.ex.route_service.dto.RouteServiceDto.courierDto.CreateCourierRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
@@ -18,12 +19,23 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CourierController {
 
+//    TODO логирования в нужных местах(опыт+ gpt)
+//    TODO security и исключения
+//    TODO чистка кода всего
     private final CourierService courierService;
 
     //    возвращает всю инфу по курьеру, используется в том числе для других сервисах
     @GetMapping("/{courierId}")
     public GetCourierResponseDto getCourier(@PathVariable UUID courierId) {
         return courierService.getCourier(courierId);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Void> createCourier(@RequestBody CreateCourierRequestDto request) {
+
+        courierService.createCourier(request);
+        return ResponseEntity.ok().build();
+
     }
 
     //    возвращает доступных по статусу и расстоянию курьеров для нового заказа

@@ -19,9 +19,6 @@ public class OrderServiceClient {
 
     private final RequestBuilder requestBuilder;
 
-    //    вообще надо вынести в application.yaml, local, и тд
-
-    //    mock вызова сервиса заказов
     @Deprecated
     public OrderResponseDto getOrder(UUID orderId) {
         if (orderId == null) {
@@ -29,7 +26,7 @@ public class OrderServiceClient {
         }
         return OrderResponseDto.builder()
                 .orderId(orderId)
-                .orderStatus("DELIVERING")
+                .orderStatus("CONFIRMED")
                 .build();
     }
 
