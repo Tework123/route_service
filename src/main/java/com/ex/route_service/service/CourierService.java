@@ -4,6 +4,7 @@ import com.ex.route_service.client.FinanceServiceClient;
 import com.ex.route_service.client.OrderServiceClient;
 import com.ex.route_service.dto.OpenRouteServiceDto.GetRouteResponseDto;
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
+import com.ex.route_service.dto.RouteServiceDto.courierDto.CreateCourierRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
@@ -40,11 +41,27 @@ public class CourierService {
     private final RouteEventService routeEventService;
     private final OpenWeatherMapService openWeatherMapService;
     private final FinanceServiceClient financeServiceClient;
+    private final RedisService redisService;
 
     public GetCourierResponseDto getCourier(UUID courierId) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
+//        запрос в redis key = courierId. значение - currentLocation. если нету, то в базу запрос, в таблицу.
+//        либо всего курьера положить в кеш?
         return courierMapper.toResponseDto(courier);
+    }
+
+    public void createCourier(CreateCourierRequestDto courierRequestDto) {
+        Courier courier = courierRepository.save(buildEntity(courierRequestDto));
+        locationPointService.save(courierRequestDto.getCurrentLocation(), courier.getCourierId());
+
+    }
+
+    private Courier buildEntity(CreateCourierRequestDto courierRequestDto) {
+        Courier courier = new Courier();
+        courier.setCourierStatus(CourierStatus.FINISHED);
+        courier.setTransportType(courierRequestDto.getTransportType());
+        return courier;
     }
 
     //    достает ближайших курьеров не учитывая дорог

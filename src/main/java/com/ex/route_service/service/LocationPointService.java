@@ -26,6 +26,7 @@ public class LocationPointService {
 
     private final LocationPointRepository locationPointRepository;
     private final CourierRepository courierRepository;
+    private final RedisService redisService;
 
 
     //    работает со сменой работника(с телефона отправляется). Как будто надо еще для транспорта сделать
@@ -35,7 +36,16 @@ public class LocationPointService {
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
         LocationPoint locationPoint = LocationPointMapper.toEntity(locationDto, courier, null);
-        return locationPointRepository.save(locationPoint);
+        LocationPoint locationPointFromDb = locationPointRepository.save(locationPoint);
+
+//todo проверить кеширование, обновлять кеш, когда меняется локация и другой функционал
+//        кешируем текущую локацию по id курьера
+        redisService.save("courier:" + courier.getCourierId() + ":location", locationDto);
+//вроде работает
+
+        LocationDto location = redisService.get("courier:" + courierId + ":location", LocationDto.class);
+        System.out.println(location);
+        return locationPoint;
     }
 
 

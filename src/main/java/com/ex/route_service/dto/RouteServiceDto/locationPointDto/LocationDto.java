@@ -1,15 +1,13 @@
 package com.ex.route_service.dto.RouteServiceDto.locationPointDto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class LocationDto {
     private double longitude;
