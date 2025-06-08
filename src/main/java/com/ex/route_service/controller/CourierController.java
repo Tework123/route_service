@@ -42,10 +42,8 @@ public class CourierController {
      */
     @PostMapping("/create")
     public ResponseEntity<Void> createCourier(@RequestBody CreateCourierRequestDto request) {
-
         courierService.createCourier(request);
         return ResponseEntity.ok().build();
-
     }
 
     /**
@@ -90,11 +88,9 @@ public class CourierController {
                                         @RequestParam double longitudeRestaurant,
                                         @RequestParam UUID courierId,
                                         @PathVariable UUID orderId) throws Exception {
-
         return courierService.getRoute(
                 longitudeRestaurant, latitudeRestaurant,
                 longitudeClient, latitudeClient, courierId, orderId);
-
     }
 
     /**
@@ -119,6 +115,8 @@ public class CourierController {
 //    todo: 1. проверить функционал готового кода
 //    todo: 2 добавить доп функционал работы с картами, геозонами
     //    todo: 2. добавить redis для сохранения в кеш текущего положения курьера(последняя точка из locationPoint)
+// в кеш надо было всего курьера, потому что его постоянно достают на проверку существования courierId.
+//    шедулер после запуска приложения, который добавляет всех курьеров в кеш.
 //    todo: 3. security и тд по документу
 
 }

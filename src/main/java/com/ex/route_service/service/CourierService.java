@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Сервис для управления курьерами и их взаимодействиями с заказами, маршрутами и локациями.
+ */
 @Service
 @RequiredArgsConstructor
 public class CourierService {
@@ -47,6 +50,12 @@ public class CourierService {
     private static final double MAX_BIKE_DISTANCE = 5000;
     private static final double MAX_CAR_DISTANCE = 10000;
 
+    /**
+     * Получает информацию о курьере и его последней геолокации.
+     *
+     * @param courierId идентификатор курьера
+     * @return DTO с информацией о курьере
+     */
     public GetCourierResponseDto getCourier(UUID courierId) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
@@ -56,6 +65,11 @@ public class CourierService {
         return courierMapper.toResponseDto(courier, locationDto);
     }
 
+    /**
+     * Создает нового курьера и сохраняет его текущую геолокацию.
+     *
+     * @param courierRequestDto данные для создания курьера
+     */
     public void createCourier(CreateCourierRequestDto courierRequestDto) {
         Courier courier = courierRepository.save(buildEntity(courierRequestDto));
         locationPointService.save(courierRequestDto.getCurrentLocation(), courier.getCourierId());
@@ -69,7 +83,16 @@ public class CourierService {
         return courier;
     }
 
-    //    достает ближайших курьеров не учитывая дорог
+    /**
+     * Находит ближайших курьеров к клиенту и ресторану, не учитывая дороги.
+     *
+     * @param longitudeClient     долгота клиента
+     * @param latitudeClient      широта клиента
+     * @param longitudeRestaurant долгота ресторана
+     * @param latitudeRestaurant  широта ресторана
+     * @param orderId             идентификатор заказа
+     * @return список DTO с подходящими курьерами
+     */
     public List<GetCouriersForOrderResponseDto> getCouriersForOrder(
             double longitudeClient,
             double latitudeClient,
@@ -88,6 +111,18 @@ public class CourierService {
         return courierMapper.toListResponseDto(rawRows, orderId);
     }
 
+    /**
+     * Строит маршрут курьера в зависимости от статуса заказа.
+     *
+     * @param longitudeRestaurant долгота ресторана
+     * @param latitudeRestaurant  широта ресторана
+     * @param longitudeClient     долгота клиента
+     * @param latitudeClient      широта клиента
+     * @param courierId           идентификатор курьера
+     * @param orderId             идентификатор заказа
+     * @return маршрут между точками
+     * @throws Exception если произошла ошибка получения маршрута
+     */
     public GetRouteResponseDto getRoute(
             Double longitudeRestaurant, Double latitudeRestaurant,
             Double longitudeClient, Double latitudeClient,
@@ -121,72 +156,102 @@ public class CourierService {
 
     }
 
-    //        курьер берет заказ(хочет его доставить), в сервис заказов улетает запрос, добавляется поле id курьера к заказу
-//        из сервиса заказов летит запрос сюда на изменение статусов:
-//    или курьер совершает другое действие с заказом
+    /**
+     * Обрабатывает смену статуса курьера в зависимости от действия.
+     *
+     * @param courierId        идентификатор курьера
+     * @param statusRequestDto информация о новом статусе и местоположении
+     */
     @Transactional
     public void changeCourierStatus(UUID courierId, RouteEventStatusRequestDto statusRequestDto) {
-        Courier courier = courierRepository.findById(courierId).orElseThrow(()
-                -> new EntityNotFoundException("Курьер не найден: " + courierId));
-
+        Courier courier = courierRepository.findById(courierId).orElseThrow(
+                () -> new EntityNotFoundException("Курьер не найден: " + courierId));
         LocationPoint locationPoint = locationPointService.save(statusRequestDto.getLocationDto(), courierId);
 
+        RouteEventStatus status = statusRequestDto.getRouteEventStatus();
         CourierStatus newCourierStatus = null;
         WeatherStatus weatherStatus = null;
 
-        if (RouteEventStatus.TAKE_ORDER.equals(statusRequestDto.getRouteEventStatus())) {
-            if (courier.getCourierStatus().equals(CourierStatus.BUSY)) {
-                throw new EntityNotFoundException("У курьера есть незавершенная работа: " + courierId);
+        switch (status) {
+            case TAKE_ORDER -> {
+                validateTakeOrder(courier, courierId);
+                newCourierStatus = CourierStatus.BUSY;
+                weatherStatus = openWeatherMapService.getWeather(statusRequestDto.getLocationDto());
             }
-            if (courier.getCourierStatus().equals(CourierStatus.PAUSED)) {
-                throw new EntityNotFoundException("Курьер на паузе: " + courierId);
+            case ORDER_DELIVERED -> {
+                newCourierStatus = CourierStatus.READY;
+                routeEventService.sendRouteEvents(statusRequestDto.getOrderId(), courierId);
             }
-            if (courier.getCourierStatus().equals(CourierStatus.FINISHED)) {
-                throw new EntityNotFoundException("Курьер не работает " + courierId);
+            case SHIFT_STARTED -> {
+                validateShiftStarted(courier, courierId);
+                newCourierStatus = CourierStatus.READY;
             }
-            newCourierStatus = CourierStatus.BUSY;
-            weatherStatus = openWeatherMapService.getWeather(statusRequestDto.getLocationDto());
-
-        } else if (RouteEventStatus.ORDER_DELIVERED.equals(statusRequestDto.getRouteEventStatus())) {
-            newCourierStatus = CourierStatus.READY;
-            routeEventService.sendRouteEvents(statusRequestDto.getOrderId(), courierId);
-
-        } else if (RouteEventStatus.SHIFT_STARTED.equals(statusRequestDto.getRouteEventStatus())) {
-            if (courier.getCourierStatus().equals(CourierStatus.FINISHED)) {
-                throw new EntityNotFoundException("У курьера есть незавершенная работа: " + courierId);
+            case PAUSE_STARTED -> {
+                validatePauseStarted(courier, courierId);
+                newCourierStatus = CourierStatus.PAUSED;
             }
-            newCourierStatus = CourierStatus.READY;
-
-        } else if (RouteEventStatus.PAUSE_STARTED.equals(statusRequestDto.getRouteEventStatus())) {
-            if (courier.getCourierStatus().equals(CourierStatus.BUSY)) {
-                throw new EntityNotFoundException("У курьера есть незавершенный заказ: " + courierId);
+            case PAUSE_FINISHED -> {
+                validatePauseFinished(courier, courierId);
+                newCourierStatus = CourierStatus.READY;
             }
-            newCourierStatus = CourierStatus.PAUSED;
-
-        } else if (RouteEventStatus.PAUSE_FINISHED.equals(statusRequestDto.getRouteEventStatus())) {
-            if (courier.getCourierStatus().equals(CourierStatus.PAUSED)) {
-                throw new EntityNotFoundException("Курьер не на паузе: " + courierId);
+            case SHIFT_FINISHED -> {
+                validateShiftFinished(courier, courierId);
+                newCourierStatus = CourierStatus.FINISHED;
             }
-            newCourierStatus = CourierStatus.READY;
-
-        } else if (RouteEventStatus.SHIFT_FINISHED.equals(statusRequestDto.getRouteEventStatus())) {
-            if (courier.getCourierStatus().equals(CourierStatus.BUSY)) {
-                throw new EntityNotFoundException("У курьера есть незавершенный заказ: " + courierId);
+            case ORDER_CANCELLED -> {
+                validateOrderCancelled(statusRequestDto, courierId);
+                newCourierStatus = CourierStatus.PAUSED;
             }
-            newCourierStatus = CourierStatus.FINISHED;
-
-        } else if (RouteEventStatus.ORDER_CANCELLED.equals(statusRequestDto.getRouteEventStatus())) {
-            if (statusRequestDto.getOrderId() == null) {
-                throw new EntityNotFoundException("У курьера нет прикрепленного заказа: " + courierId);
-            }
-            newCourierStatus = CourierStatus.PAUSED;
         }
 
         if (newCourierStatus != null) {
             courier.setCourierStatus(newCourierStatus);
             courierRepository.save(courier);
         }
-        routeEventService.save(statusRequestDto.getRouteEventStatus(), statusRequestDto.getOrderId(), courier, locationPoint, weatherStatus);
+
+        routeEventService.save(status, statusRequestDto.getOrderId(), courier, locationPoint, weatherStatus);
+    }
+
+    private void validateTakeOrder(Courier courier, UUID courierId) {
+        if (courier.getCourierStatus() == CourierStatus.BUSY) {
+            throw new EntityNotFoundException("У курьера есть незавершенная работа: " + courierId);
+        }
+        if (courier.getCourierStatus() == CourierStatus.PAUSED) {
+            throw new EntityNotFoundException("Курьер на паузе: " + courierId);
+        }
+        if (courier.getCourierStatus() == CourierStatus.FINISHED) {
+            throw new EntityNotFoundException("Курьер не работает: " + courierId);
+        }
+    }
+
+    private void validateShiftStarted(Courier courier, UUID courierId) {
+        if (courier.getCourierStatus() == CourierStatus.FINISHED) {
+            throw new EntityNotFoundException("У курьера есть незавершенная работа: " + courierId);
+        }
+    }
+
+    private void validatePauseStarted(Courier courier, UUID courierId) {
+        if (courier.getCourierStatus() == CourierStatus.BUSY) {
+            throw new EntityNotFoundException("У курьера есть незавершенный заказ: " + courierId);
+        }
+    }
+
+    private void validatePauseFinished(Courier courier, UUID courierId) {
+        if (courier.getCourierStatus() != CourierStatus.PAUSED) {
+            throw new EntityNotFoundException("Курьер не на паузе: " + courierId);
+        }
+    }
+
+    private void validateShiftFinished(Courier courier, UUID courierId) {
+        if (courier.getCourierStatus() == CourierStatus.BUSY) {
+            throw new EntityNotFoundException("У курьера есть незавершенный заказ: " + courierId);
+        }
+    }
+
+    private void validateOrderCancelled(RouteEventStatusRequestDto requestDto, UUID courierId) {
+        if (requestDto.getOrderId() == null) {
+            throw new EntityNotFoundException("У курьера нет прикрепленного заказа: " + courierId);
+        }
     }
 
 }

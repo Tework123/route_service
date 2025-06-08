@@ -7,11 +7,20 @@ import com.ex.route_service.enums.WeatherStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис для получения и интерпретации погодных условий на основе координат.
+ */
 @Service
 @RequiredArgsConstructor
 public class OpenWeatherMapService {
     private final OpenWeatherMapClient openWeatherMapClient;
 
+    /**
+     * Получает погодные условия по координатам и интерпретирует их в {@link WeatherStatus}.
+     *
+     * @param locationDto координаты, для которых нужно определить погоду
+     * @return статус погодных условий
+     */
     public WeatherStatus getWeather(LocationDto locationDto) {
         OpenWeatherResponseDto weatherResponseDto =
                 openWeatherMapClient.getWeather(locationDto.getLongitude(), locationDto.getLatitude());

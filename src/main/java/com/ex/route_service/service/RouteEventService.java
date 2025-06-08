@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Сервис для работы с маршрутными событиями курьеров.
+ * Отвечает за сохранение событий и отправку их во внешний сервис.
+ */
 @Service
 @RequiredArgsConstructor
 public class RouteEventService {
@@ -23,21 +27,29 @@ public class RouteEventService {
     private final RouteEventRepository routeEventRepository;
     private final FinanceServiceClient financeServiceClient;
 
-    public void save(RouteEventStatus routeEventStatus, UUID orderId, Courier courier, LocationPoint locationPoint) {
-        RouteEvent routeEvent = RouteEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, null);
-        routeEventRepository.save(routeEvent);
-    }
-
+    /**
+     * Сохраняет маршрутное событие в базе данных.
+     *
+     * @param routeEventStatus статус события маршрута
+     * @param orderId          идентификатор заказа
+     * @param courier          курьер, связанный с событием
+     * @param locationPoint    точка местоположения, связанная с событием
+     * @param weatherStatus    погодные условия во время события
+     */
     public void save(RouteEventStatus routeEventStatus, UUID orderId, Courier courier, LocationPoint locationPoint, WeatherStatus weatherStatus) {
         RouteEvent routeEvent = RouteEventMapper.toEntity(routeEventStatus, orderId, courier, locationPoint, weatherStatus);
         routeEventRepository.save(routeEvent);
     }
 
+    /**
+     * Отправляет маршрутные события в финансовый сервис.
+     *
+     * @param orderId   идентификатор заказа
+     * @param courierId идентификатор курьера
+     */
     public void sendRouteEvents(UUID orderId, UUID courierId) {
         List<RouteEvent> routeEvents = routeEventRepository.findAllByOrderId(orderId);
         SendRouteEventsRequestDto requestDto = RouteEventMapper.toSendRouteEventsRequestDto(routeEvents, courierId, orderId);
         financeServiceClient.sendRouteEvents(requestDto);
     }
-
-
 }
