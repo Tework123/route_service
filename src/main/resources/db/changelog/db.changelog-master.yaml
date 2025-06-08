@@ -1,10 +1,10 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/25_05_2025_create_db.yaml
+      file: db/changelog/changeset/05/25_05_2025_create_db.yaml
   - include:
-      file: db/changelog/changeset/25_05_2025_add_test_data.yaml
+      file: db/changelog/changeset/05/25_05_2025_add_test_data.yaml
   - include:
-      file: /db/changelog/changeset/28_05_2025_add_weather_field.yaml
+      file: /db/changelog/changeset/05/28_05_2025_add_weather_field.yaml
   - include:
-      file: /db/changelog/changeset/07_06_2025_change_test_data.yaml
+      file: /db/changelog/changeset/06/07_06_2025_change_test_data.yaml
 

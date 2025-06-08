@@ -37,16 +37,12 @@ public class CourierMapper {
                 .build();
     }
 
-    public GetCourierResponseDto toResponseDto(Courier courier) {
+    public GetCourierResponseDto toResponseDto(Courier courier, LocationDto locationDto) {
         if (courier == null) return null;
-
-//        в redis добавить currentLocation, в сервисе вставлять
-//        LocationDto locationDto = new GetCourierResponseDto
-//                .LocationDto(courier.getCurrentLocation().getX(), courier.getCurrentLocation().getY());
 
         return GetCourierResponseDto.builder()
                 .courierId(courier.getCourierId())
-//                .currentLocation(locationDto)
+                .currentLocation(locationDto)
                 .courierStatus(courier.getCourierStatus())
                 .transportType(courier.getTransportType())
                 .build();

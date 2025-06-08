@@ -10,12 +10,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Репозиторий для работы с сущностью {@link RouteEvent}.
+ */
 @Repository
 public interface RouteEventRepository extends JpaRepository<RouteEvent, UUID> {
-    //     находим последний статус курьера
-    @Query("SELECT e FROM RouteEvent e WHERE e.courier.courierId = :courierId ORDER BY e.timestamp DESC")
-    RouteEvent findCourierLastStatus(@Param("courierId") UUID courierId);
 
-    @Query("SELECT e FROM RouteEvent e WHERE e.orderId = : orderId ORDER BY e.timestamp DESC")
+    /**
+     * Находит все события маршрута, связанные с заданным идентификатором заказа.
+     *
+     * @param orderId UUID заказа
+     * @return список событий {@link RouteEvent} для данного заказа
+     */
+    @Query("SELECT e FROM RouteEvent e WHERE e.orderId = :orderId ORDER BY e.timestamp DESC")
     List<RouteEvent> findAllByOrderId(@Param("orderId") UUID orderId);
 }

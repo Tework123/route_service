@@ -4,12 +4,15 @@ import com.ex.route_service.enums.RouteEventStatus;
 import com.ex.route_service.enums.WeatherStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-// Если хочешь логировать действия курьера и статус маршрута — пригодится.
-@Getter
+/**
+ * Сущность событий маршрута курьера.
+ * Используется для логирования действий курьера.
+ */@Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,13 +30,11 @@ public class RouteEvent {
     @JoinColumn(name = "courier_id")
     private Courier courier;
 
-    //    у ивента всегда есть координаты
     @OneToOne(optional = false)
     @JoinColumn(name = "location_point_id", referencedColumnName = "location_point_id", nullable = false)
     private LocationPoint locationPoint;
 
-    //    свзяь с сервисом заказов, у маршрута может быть заказ, чтобы можно было
-    @Column(name = "order_id", nullable = true)
+    @Column(name = "order_id")
     private UUID orderId;
 
     @Enumerated(EnumType.STRING)
@@ -42,22 +43,13 @@ public class RouteEvent {
     @Enumerated(EnumType.STRING)
     private WeatherStatus weatherStatus;
 
-    /**
-     * Время создания записи об ивенте на смартфоне.
-     */
     @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
+    @CreationTimestamp
     @Column(name = "time_create", nullable = false, updatable = false)
     private LocalDateTime timeCreate;
 
     @Column(name = "message")
     private String message;
-
-
-    @PrePersist
-    public void prePersist() {
-        timeCreate = LocalDateTime.now();
-    }
-
 }
