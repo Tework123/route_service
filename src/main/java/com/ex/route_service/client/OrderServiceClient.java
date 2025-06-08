@@ -2,6 +2,7 @@ package com.ex.route_service.client;
 
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import java.util.UUID;
  * Клиент для взаимодействия с сервисом заказов.
  * Позволяет получать информацию о заказах.
  */
+@Slf4j
 @Component
 @AllArgsConstructor
 public class OrderServiceClient {
@@ -38,7 +40,7 @@ public class OrderServiceClient {
         }
         return OrderResponseDto.builder()
                 .orderId(orderId)
-                .orderStatus("CONFIRMED")
+                .orderStatus("DELIVERING")
                 .build();
     }
 
@@ -50,8 +52,10 @@ public class OrderServiceClient {
      */
     public OrderResponseDto getOrder1(UUID orderId) {
         if (orderId == null) {
+            log.warn("Вызов getOrder1 с null orderId");
             return null;
         }
+
         String url = requestBuilder.buildUrl(
                 "http",
                 "order_service:8080",
@@ -60,16 +64,19 @@ public class OrderServiceClient {
                 null
         );
 
+        log.info("Запрос в сервис заказов для orderId: {}, URL: {}", orderId, url);
+
         HttpHeaders headers = requestBuilder.buildHeaders(null);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<OrderResponseDto> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                OrderResponseDto.class
-        );
-
-        return response.getBody();
+        try {
+            ResponseEntity<OrderResponseDto> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, OrderResponseDto.class);
+            log.info("Успешно получен заказ с id: {}", orderId);
+            return response.getBody();
+        } catch (Exception e) {
+            log.error("Ошибка при получении заказа с id: {}", orderId, e);
+            throw e;
+        }
     }
 }

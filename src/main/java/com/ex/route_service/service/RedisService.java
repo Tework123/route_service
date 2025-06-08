@@ -2,6 +2,7 @@ package com.ex.route_service.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,8 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisService {
 
-    public ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
 

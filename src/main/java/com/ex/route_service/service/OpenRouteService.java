@@ -57,7 +57,7 @@ public class OpenRouteService {
      */
     public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
                            Double longitudeClient, Double latitudeClient,
-                           TransportType transportType) {
+                           TransportType transportType) throws Exception {
         return openRouteClient.getRoute(longitudeCourier, latitudeCourier,
                 longitudeClient, latitudeClient,
                 transportType);

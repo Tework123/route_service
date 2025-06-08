@@ -5,6 +5,7 @@ import com.ex.route_service.dto.OpenRouteServiceDto.PostRouteResponseDto;
 import com.ex.route_service.enums.TransportType;
 import com.ex.route_service.mapper.OpenRouteMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import java.util.Map;
  * Клиент для взаимодействия с OpenRouteService API.
  * Используется для получения маршрутов по координатам и типу транспорта.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OpenRouteClient {
@@ -38,7 +40,7 @@ public class OpenRouteClient {
      * @param latitudeCourier широта курьера
      * @param longitudeClient долгота клиента
      * @param latitudeClient широта клиента
-     * @param transportType тип транспорта (например, driving-car, cycling, foot)
+     * @param transportType тип транспорта
      * @return DTO с информацией о маршруте
      */
     public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
@@ -49,6 +51,7 @@ public class OpenRouteClient {
                 "start", longitudeCourier + "," + latitudeCourier,
                 "end", longitudeClient + "," + latitudeClient
         );
+
         String url = requestBuilder.buildUrl(
                 "https",
                 "api.openrouteservice.org",
@@ -56,7 +59,19 @@ public class OpenRouteClient {
                 transportType.getOpenRouteName(),
                 params
         );
-        return restTemplate.getForObject(url, GetRouteResponseDto.class);
+
+        log.info("GET Запрос маршрута по URL: {}", url);
+
+        try {
+            GetRouteResponseDto response = restTemplate.getForObject(url, GetRouteResponseDto.class);
+            log.info("Маршрут успешно получен для транспорта {} от [{}:{}] до [{}:{}]",
+                    transportType, longitudeCourier, latitudeCourier, longitudeClient, latitudeClient);
+            return response;
+        } catch (Exception e) {
+            log.error("Ошибка при получении маршрута для транспорта {} от [{}:{}] до [{}:{}]",
+                    transportType, longitudeCourier, latitudeCourier, longitudeClient, latitudeClient, e);
+            throw e;
+        }
     }
 
     /**
@@ -74,15 +89,21 @@ public class OpenRouteClient {
                 transportType.getOpenRouteName(),
                 Map.of()
         );
-
         HttpHeaders headers = requestBuilder.buildHeaders(MediaType.APPLICATION_JSON);
         headers.set("Authorization", API_KEY);
-
         Map<String, Object> body = new HashMap<>();
         body.put("coordinates", coordinates);
-
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        PostRouteResponseDto responseDto = restTemplate.postForObject(url, requestEntity, PostRouteResponseDto.class);
-        return OpenRouteMapper.postToGetRouteResponseDto(responseDto);
+
+        log.info("POST Запрос маршрута по URL: {}", url);
+
+        try {
+            PostRouteResponseDto responseDto = restTemplate.postForObject(url, requestEntity, PostRouteResponseDto.class);
+            log.info("Маршрут успешно получен для транспорта: {}", transportType);
+            return OpenRouteMapper.postToGetRouteResponseDto(responseDto);
+        } catch (Exception e) {
+            log.error("Ошибка при получении маршрута для транспорта: {} с координатами: {}", transportType, coordinates, e);
+            throw e;
+        }
     }
 }

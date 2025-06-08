@@ -21,6 +21,7 @@ import com.ex.route_service.repository.CourierRepository;
 import com.ex.route_service.repository.RouteEventRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import java.util.UUID;
 /**
  * Сервис для управления курьерами и их взаимодействиями с заказами, маршрутами и локациями.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourierService {
@@ -72,8 +74,8 @@ public class CourierService {
      */
     public void createCourier(CreateCourierRequestDto courierRequestDto) {
         Courier courier = courierRepository.save(buildEntity(courierRequestDto));
+        log.info("Курьер создан: courierId={}", courier.getCourierId());
         locationPointService.save(courierRequestDto.getCurrentLocation(), courier.getCourierId());
-
     }
 
     private Courier buildEntity(CreateCourierRequestDto courierRequestDto) {
@@ -100,7 +102,6 @@ public class CourierService {
             double latitudeRestaurant,
             UUID orderId
     ) {
-
         List<Map<String, Object>> rawRows = courierJdbcRepository.findNearbyCouriersRaw(
                 longitudeClient, latitudeClient,
                 longitudeRestaurant, latitudeRestaurant,
@@ -151,9 +152,7 @@ public class CourierService {
                     lastLocationPoint.getLatitude(),
                     longitudeClient, latitudeClient, courier.getTransportType());
         }
-
         return route;
-
     }
 
     /**
@@ -203,12 +202,11 @@ public class CourierService {
                 newCourierStatus = CourierStatus.PAUSED;
             }
         }
-
         if (newCourierStatus != null) {
             courier.setCourierStatus(newCourierStatus);
             courierRepository.save(courier);
+            log.info("Статус курьера {} изменен на {}", courierId, newCourierStatus);
         }
-
         routeEventService.save(status, statusRequestDto.getOrderId(), courier, locationPoint, weatherStatus);
     }
 
