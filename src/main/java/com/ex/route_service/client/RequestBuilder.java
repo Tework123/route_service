@@ -8,17 +8,33 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
+/**
+ * Класс для построения URL и HTTP-заголовков.
+ */
 @Component
 @AllArgsConstructor
 public class RequestBuilder {
 
+    /**
+     * Построить URL.
+     *
+     * @param scheme       схема (например, "http" или "https")
+     * @param host         хост (например, "api.example.com")
+     * @param path         базовый путь (например, "/api/v1/resource/")
+     * @param pathVariable дополнительная часть пути, например ID ресурса
+     * @param queryParams  параметры запроса в виде ключ-значение
+     * @return сформированный URL в виде строки
+     */
     public String buildUrl(String scheme, String host, String path, String pathVariable, Map<String, String> queryParams) {
 
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
                 .scheme(scheme)
                 .host(host)
-                .path(path.endsWith("/") ? path : path + "/")
-                .path(pathVariable);
+                .path(path.endsWith("/") ? path : path + "/");
+
+        if (pathVariable != null) {
+            builder.path(pathVariable);
+        }
 
         if (queryParams != null && !queryParams.isEmpty()) {
             queryParams.forEach(builder::queryParam);
@@ -26,6 +42,12 @@ public class RequestBuilder {
         return builder.toUriString();
     }
 
+    /**
+     * Построить HTTP-заголовки с указанным Content-Type.
+     *
+     * @param mediaType тип содержимого (например, MediaType.APPLICATION_JSON)
+     * @return объект HttpHeaders
+     */
     public HttpHeaders buildHeaders(MediaType mediaType) {
         if (mediaType == null) {
             return new HttpHeaders();
@@ -35,6 +57,4 @@ public class RequestBuilder {
         return headers;
 
     }
-
-
 }

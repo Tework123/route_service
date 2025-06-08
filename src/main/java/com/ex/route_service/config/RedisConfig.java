@@ -10,9 +10,20 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * Конфигурация для настройки RedisTemplate с сериализацией JSON.
+ */
 @Configuration
 public class RedisConfig {
 
+    /**
+     * Создает и настраивает RedisTemplate для работы с Redis.
+     * Ключи и хеш-ключи сериализуются в строки.
+     * Значения и хеш-значения сериализуются в JSON.
+     *
+     * @param connectionFactory фабрика соединений с Redis
+     * @return настроенный RedisTemplate
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();

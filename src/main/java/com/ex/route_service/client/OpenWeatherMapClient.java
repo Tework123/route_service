@@ -8,6 +8,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+/**
+ * Клиент для получения данных о погоде с OpenWeatherMap API.
+ */
 @Component
 @RequiredArgsConstructor
 public class OpenWeatherMapClient {
@@ -17,6 +20,14 @@ public class OpenWeatherMapClient {
     @Value("${openweathermap.api-key}")
     private String API_KEY;
 
+    /**
+     * Получить текущую погоду по координатам (долгота, широта).
+     * Используется метрическая система измерения (Цельсий).
+     *
+     * @param longitude долгота
+     * @param latitude широта
+     * @return DTO с данными о погоде
+     */
     public OpenWeatherResponseDto getWeather(Double longitude, Double latitude){
 
         Map<String, String> params = Map.of(

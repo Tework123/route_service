@@ -15,6 +15,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
+/**
+ * Клиент для взаимодействия с сервисом финансов.
+ * Используется для отправки маршрутов и получения информации о заказе.
+ */
 @Component
 @AllArgsConstructor
 public class FinanceServiceClient {
@@ -25,6 +29,14 @@ public class FinanceServiceClient {
 
     private final RequestBuilder requestBuilder;
 
+    /**
+     * Заглушка для получения информации о заказе по ID.
+     * Возвращает тестовый объект со статусом DELIVERING.
+     *
+     * @param orderId идентификатор заказа
+     * @return OrderResponseDto с заданным ID и статусом, либо null если ID null
+     * @deprecated метод заглушка и не должен использоваться в продакшене
+     */
     @Deprecated
     public OrderResponseDto getOrder(UUID orderId) {
         if (orderId == null) {
@@ -36,6 +48,11 @@ public class FinanceServiceClient {
                 .build();
     }
 
+    /**
+     * Отправляет информацию о маршруте (ивенты) в финансовый сервис.
+     *
+     * @param requestDto DTO с данными маршрута, содержащий orderId и courierId
+     */
     public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
         String url = requestBuilder.buildUrl(
                 "http",

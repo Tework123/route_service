@@ -16,6 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Клиент для взаимодействия с OpenRouteService API.
+ * Используется для получения маршрутов по координатам и типу транспорта.
+ */
 @Component
 @RequiredArgsConstructor
 public class OpenRouteClient {
@@ -27,6 +31,16 @@ public class OpenRouteClient {
     @Value("${openrouteservice.api-key}")
     private String API_KEY;
 
+    /**
+     * Получить маршрут между двумя точками (курьер и клиент) с заданным типом транспорта.
+     *
+     * @param longitudeCourier долгота курьера
+     * @param latitudeCourier широта курьера
+     * @param longitudeClient долгота клиента
+     * @param latitudeClient широта клиента
+     * @param transportType тип транспорта (например, driving-car, cycling, foot)
+     * @return DTO с информацией о маршруте
+     */
     public GetRouteResponseDto getRoute(Double longitudeCourier, Double latitudeCourier,
                                         Double longitudeClient, Double latitudeClient,
                                         TransportType transportType) {
@@ -45,6 +59,13 @@ public class OpenRouteClient {
         return restTemplate.getForObject(url, GetRouteResponseDto.class);
     }
 
+    /**
+     * Получить маршрут по списку координат и типу транспорта.
+     *
+     * @param coordinates список координат маршрута (каждая точка — список из [долгота, широта])
+     * @param transportType тип транспорта
+     * @return DTO с информацией о маршруте
+     */
     public GetRouteResponseDto getRoute(List<List<Double>> coordinates, TransportType transportType) {
         String url = requestBuilder.buildUrl(
                 "https",

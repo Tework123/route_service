@@ -1,7 +1,6 @@
 package com.ex.route_service.service;
 
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
-import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationResponseDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.mapper.LocationPointMapper;
@@ -11,14 +10,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Сервис для обработки координатных данных от устройств.
- * <p>
- * Отвечает за преобразование входных данных и сохранение их в базу данных.
  */
 @Service
 @RequiredArgsConstructor
@@ -29,42 +27,65 @@ public class LocationPointService {
     private final RedisService redisService;
 
 
-    //    работает со сменой работника(с телефона отправляется). Как будто надо еще для транспорта сделать
-//    ручку, когда транспорт не используется, чтобы можно было бы следить за его местоположением(мейби)
+    /**
+     * Сохраняет координаты устройства для заданного курьера.
+     *
+     * @param locationDto координаты и данные устройства
+     * @param courierId UUID курьера
+     * @return сохранённый объект LocationPoint
+     */
     public LocationPoint save(LocationDto locationDto, UUID courierId) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
         LocationPoint locationPoint = LocationPointMapper.toEntity(locationDto, courier, null);
-        LocationPoint locationPointFromDb = locationPointRepository.save(locationPoint);
 
-//todo проверить кеширование, обновлять кеш, когда меняется локация и другой функционал
-//        кешируем текущую локацию по id курьера
-        redisService.save("courier:" + courier.getCourierId() + ":location", locationDto);
-//вроде работает
-
-        LocationDto location = redisService.get("courier:" + courierId + ":location", LocationDto.class);
-        System.out.println(location);
+        redisService.save("courier:" + courier.getCourierId() + ":location", locationDto, Duration.ofMinutes(2));
         return locationPoint;
     }
 
+    /**
+     * Получает последнюю сохранённую координату курьера.
+     *
+     * @param courierId UUID курьера
+     * @return координаты последней точки
+     */
+    public LocationDto getLastLocationPoint(UUID courierId) {
+        courierRepository.findById(courierId)
+                .orElseThrow(() -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
-    public LocationResponseDto getLastLocationPoint(UUID courierId) {
-        courierRepository.findById(courierId).orElseThrow(()
-                -> new EntityNotFoundException("Курьер не найден: " + courierId));
+        String cacheKey = "courier:" + courierId + ":location";
+        LocationDto cached = redisService.get(cacheKey, LocationDto.class);
+        if (cached != null) {
+            return cached;
+        }
 
         LocationPoint locationPoint = locationPointRepository.findTopByCourierId(courierId);
-        return LocationPointMapper.toLocationResponseDtoFromEntity(locationPoint);
+        if (locationPoint == null) {
+            throw new EntityNotFoundException("Локация для курьера не найдена: " + courierId);
+        }
+
+        LocationDto locationDto = LocationPointMapper.toDtoFromEntity(locationPoint);
+        redisService.save(cacheKey, locationDto, Duration.ofMinutes(2));
+        return locationDto;
     }
 
-    public List<LocationResponseDto> getLocationPoints(UUID courierId,
+    /**
+     * Получает список координат курьера за заданный промежуток времени.
+     *
+     * @param courierId UUID курьера
+     * @param fromDateTime начало интервала
+     * @param toDateTime конец интервала
+     * @return список координат
+     */
+    public List<LocationDto> getLocationPoints(UUID courierId,
                                                        LocalDateTime fromDateTime,
                                                        LocalDateTime toDateTime) {
         courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
         List<LocationPoint> locationPoints = locationPointRepository.findByCourierIdAndTimestampBetween(courierId, fromDateTime, toDateTime);
-        return LocationPointMapper.toLocationResponseDtoFromEntity(locationPoints);
+        return LocationPointMapper.toLocationDtoFromEntity(locationPoints);
     }
 
 }

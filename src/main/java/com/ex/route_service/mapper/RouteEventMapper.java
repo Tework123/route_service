@@ -60,7 +60,7 @@ public class RouteEventMapper {
                 .timeCreate(routeEvent.getTimeCreate())
                 .routeEventStatus(routeEvent.getRouteEventStatus())
                 .message(routeEvent.getMessage())
-                .locationPoint(LocationPointMapper.toDto(routeEvent.getLocationPoint()))
+                .locationPoint(LocationPointMapper.toSendRouteDto(routeEvent.getLocationPoint()))
                 .weatherStatus(routeEvent.getWeatherStatus())
                 .build();
 

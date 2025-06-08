@@ -16,6 +16,12 @@ import java.util.UUID;
 @Repository
 public interface LocationPointRepository extends JpaRepository<LocationPoint, UUID> {
 
+    /**
+     * Находит последнюю (по времени) точку локации курьера по его идентификатору.
+     *
+     * @param courierId UUID курьера
+     * @return последняя {@link LocationPoint} курьера или null, если не найдено
+     */
     @Query(value = """
     SELECT * 
     FROM location_point 
@@ -35,13 +41,13 @@ public interface LocationPointRepository extends JpaRepository<LocationPoint, UU
     @Query("""
     SELECT lp FROM LocationPoint lp
     WHERE lp.courier.courierId = :courierId
-    AND (:fromDateTime IS NULL OR lp.timestamp >= :fromDateTime)
-    AND (:toDateTime IS NULL OR lp.timestamp <= :toDateTime)
+    AND (CAST(:fromDateTime AS timestamp) IS NULL OR lp.timestamp >= :fromDateTime)
+    AND (CAST(:toDateTime AS timestamp) IS NULL OR lp.timestamp <= :toDateTime)
     ORDER BY lp.timestamp ASC
 """)
     List<LocationPoint> findByCourierIdAndTimestampBetween(
             @Param("courierId") UUID courierId,
-            @Param("from") LocalDateTime fromDateTime,
-            @Param("to") LocalDateTime toDateTime
+            @Param("fromDateTime") LocalDateTime fromDateTime,
+            @Param("toDateTime") LocalDateTime toDateTime
     );
 }

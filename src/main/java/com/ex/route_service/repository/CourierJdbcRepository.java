@@ -1,11 +1,15 @@
 package com.ex.route_service.repository;
 
+import com.ex.route_service.entity.Courier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс для работы с сущностью {@link Courier}.
+ */
 @Repository
 public class CourierJdbcRepository {
     private final JdbcTemplate  jdbcTemplate;
@@ -14,6 +18,18 @@ public class CourierJdbcRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Выполняет поиск ближайших курьеров по координатам клиента и ресторана.
+     *
+     * @param longitudeClient      долгота клиента
+     * @param latitudeClient       широта клиента
+     * @param longitudeRestaurant  долгота ресторана
+     * @param latitudeRestaurant   широта ресторана
+     * @param maxFootDistance      максимальное расстояние для курьеров пешком
+     * @param maxBikeDistance      максимальное расстояние для курьеров на велосипеде
+     * @param maxCarDistance       максимальное расстояние для курьеров на автомобиле
+     * @return список курьеров с информацией о координатах, типе транспорта и общей дистанции
+     */
     public List<Map<String, Object>> findNearbyCouriersRaw(
             double longitudeClient, double latitudeClient,
             double longitudeRestaurant, double latitudeRestaurant,

@@ -5,7 +5,6 @@ import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.CreateLocationPointDto;
 import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
-import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationResponseDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.entity.RouteEvent;
@@ -51,7 +50,7 @@ public class LocationPointMapper {
 
     }
 
-    public static SendRouteEventsRequestDto.LocationPointDto toDto(LocationPoint locationPoint) {
+    public static SendRouteEventsRequestDto.LocationPointDto toSendRouteDto(LocationPoint locationPoint) {
         return SendRouteEventsRequestDto.LocationPointDto.builder()
                 .locationPointId(locationPoint.getLocationPointId())
                 .longitude(locationPoint.getLocation().getX())
@@ -61,19 +60,16 @@ public class LocationPointMapper {
                 .build();
     }
 
-    public static List<LocationResponseDto> toLocationResponseDtoFromEntity(List<LocationPoint> locationPoints) {
+    public static List<LocationDto> toLocationDtoFromEntity(List<LocationPoint> locationPoints) {
         return locationPoints == null ? new ArrayList<>()
-                : locationPoints.stream().map(LocationPointMapper::toLocationResponseDtoFromEntity).collect(Collectors.toList());
+                : locationPoints.stream().map(LocationPointMapper::toDtoFromEntity).collect(Collectors.toList());
     }
 
-    public static LocationResponseDto toLocationResponseDtoFromEntity(LocationPoint locationPoint) {
-        if (locationPoint == null) return null;
-        return LocationResponseDto.builder()
+    public static LocationDto toDtoFromEntity(LocationPoint locationPoint) {
+        return LocationDto.builder()
                 .longitude(locationPoint.getLocation().getX())
                 .latitude(locationPoint.getLocation().getY())
                 .timestamp(locationPoint.getTimestamp())
                 .build();
-
     }
-
 }

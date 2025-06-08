@@ -17,10 +17,6 @@ public class GetCouriersForOrderResponseDto {
     private UUID orderId;
     private TransportType transportType;
     private CourierStatus courierStatus;
-
-    //        дистанция общая для доставки
     private double distance;
-
     private LocationDto currentLocation;
-
 }

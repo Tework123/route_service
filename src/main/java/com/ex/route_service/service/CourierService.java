@@ -8,7 +8,7 @@ import com.ex.route_service.dto.RouteServiceDto.courierDto.CreateCourierRequestD
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCourierResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.GetCouriersForOrderResponseDto;
 import com.ex.route_service.dto.RouteServiceDto.courierDto.RouteEventStatusRequestDto;
-import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationResponseDto;
+import com.ex.route_service.dto.RouteServiceDto.locationPointDto.LocationDto;
 import com.ex.route_service.entity.Courier;
 import com.ex.route_service.entity.LocationPoint;
 import com.ex.route_service.enums.CourierStatus;
@@ -43,12 +43,17 @@ public class CourierService {
     private final FinanceServiceClient financeServiceClient;
     private final RedisService redisService;
 
+    private static final double MAX_FOOT_DISTANCE = 2500;
+    private static final double MAX_BIKE_DISTANCE = 5000;
+    private static final double MAX_CAR_DISTANCE = 10000;
+
     public GetCourierResponseDto getCourier(UUID courierId) {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
-//        запрос в redis key = courierId. значение - currentLocation. если нету, то в базу запрос, в таблицу.
-//        либо всего курьера положить в кеш?
-        return courierMapper.toResponseDto(courier);
+
+        LocationDto locationDto = locationPointService.getLastLocationPoint(courierId);
+
+        return courierMapper.toResponseDto(courier, locationDto);
     }
 
     public void createCourier(CreateCourierRequestDto courierRequestDto) {
@@ -72,23 +77,14 @@ public class CourierService {
             double latitudeRestaurant,
             UUID orderId
     ) {
-        ////        надо их где то хранить, чтобы можно было изменять через ui
-        double maxFootDistance = 2500;
-        double maxBikeDistance = 5000;
-        double maxCarDistance = 10000;
 
-//        пытаемся достать из кеша, если слишком старые(более 2 минут), то достаем из базы:
-
-
-//        достаем сырые данные
         List<Map<String, Object>> rawRows = courierJdbcRepository.findNearbyCouriersRaw(
                 longitudeClient, latitudeClient,
                 longitudeRestaurant, latitudeRestaurant,
-                maxFootDistance,
-                maxBikeDistance,
-                maxCarDistance
+                MAX_FOOT_DISTANCE,
+                MAX_BIKE_DISTANCE,
+                MAX_CAR_DISTANCE
         );
-
         return courierMapper.toListResponseDto(rawRows, orderId);
     }
 
@@ -100,7 +96,7 @@ public class CourierService {
         Courier courier = courierRepository.findById(courierId).orElseThrow(()
                 -> new EntityNotFoundException("Курьер не найден: " + courierId));
 
-        LocationResponseDto lastLocationPoint = locationPointService.getLastLocationPoint(courierId);
+        LocationDto lastLocationPoint = locationPointService.getLastLocationPoint(courierId);
 
 //      получаем статус заказа из сервиса заказов
         OrderResponseDto orderDto = orderServiceClient.getOrder(orderId);

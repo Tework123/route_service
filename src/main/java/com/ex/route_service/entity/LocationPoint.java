@@ -2,6 +2,7 @@ package com.ex.route_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 /**
  * Сущность "Точка местоположения".
- * Хранит координаты устройства в определённый момент времени, без ивента
+ * Хранит координаты устройства в определённый момент времени
  */
 @Getter
 @Setter
@@ -26,11 +27,10 @@ public class LocationPoint {
     private UUID locationPointId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "courier_id", nullable = true)
+    @JoinColumn(name = "courier_id")
     private Courier courier;
 
-//    у координаты может не быть ивента
-    @OneToOne(mappedBy = "locationPoint", optional = true)
+    @OneToOne(mappedBy = "locationPoint")
     private RouteEvent routeEvent;
 
 
@@ -44,13 +44,9 @@ public class LocationPoint {
     private LocalDateTime timestamp;
 
     /**
-     * Время сохранении записи о местоположении в бд.
+     * Время сохранения записи о местоположении в бд.
      */
+    @CreationTimestamp
     @Column(name = "time_create", nullable = false, updatable = false)
     private LocalDateTime timeCreate;
-
-    @PrePersist
-    public void prePersist() {
-        timeCreate = LocalDateTime.now();
-    }
 }

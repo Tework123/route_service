@@ -14,22 +14,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST-контроллер для управления курьерами.
+ */
 @RestController
 @RequestMapping("/courier")
 @AllArgsConstructor
 public class CourierController {
-
-//    TODO логирования в нужных местах(опыт+ gpt)
-//    TODO security и исключения
-//    TODO чистка кода всего
     private final CourierService courierService;
 
-    //    возвращает всю инфу по курьеру, используется в том числе для других сервисах
+    /**
+     * Возвращает информацию о курьере по его UUID.
+     *
+     * @param courierId UUID курьера
+     * @return DTO с информацией о курьере
+     */
     @GetMapping("/{courierId}")
     public GetCourierResponseDto getCourier(@PathVariable UUID courierId) {
         return courierService.getCourier(courierId);
     }
 
+    /**
+     * Создает нового курьера.
+     *
+     * @param request DTO с данными для создания курьера
+     * @return пустой ответ с HTTP 200 OK
+     */
     @PostMapping("/create")
     public ResponseEntity<Void> createCourier(@RequestBody CreateCourierRequestDto request) {
 
@@ -38,9 +48,16 @@ public class CourierController {
 
     }
 
-    //    возвращает доступных по статусу и расстоянию курьеров для нового заказа
-//    запрос делает сервис заказов при появлении нового заказа,
-//    чтобы отправить уведомления незанятым ближайшим курьерами
+    /**
+     * Возвращает список доступных курьеров для нового заказа.
+     *
+     * @param longitudeClient долгота клиента
+     * @param latitudeClient  широта клиента
+     * @param longitudeRestaurant долгота ресторана
+     * @param latitudeRestaurant  широта ресторана
+     * @param orderId UUID заказа
+     * @return список курьеров, подходящих для заказа
+     */
     @GetMapping("/order/{orderId}")
     public List<GetCouriersForOrderResponseDto> getCouriersForOrder(
             @RequestParam double longitudeClient,
@@ -55,7 +72,17 @@ public class CourierController {
                 orderId);
     }
 
-    //    получает маршрут для доставки заказа
+    /**
+     * Получает маршрут для доставки заказа.
+     *
+     * @param latitudeClient широта клиента
+     * @param longitudeClient долгота клиента
+     * @param latitudeRestaurant широта ресторана
+     * @param longitudeRestaurant долгота ресторана
+     * @param courierId UUID курьера
+     * @param orderId UUID заказа
+     * @return DTO с маршрутом доставки
+     */
     @GetMapping("/route/{orderId}")
     public GetRouteResponseDto getRoute(@RequestParam double latitudeClient,
                                         @RequestParam double longitudeClient,
@@ -70,8 +97,13 @@ public class CourierController {
 
     }
 
-    //   может прийти как из сервиса заказов, так и из мобилки курьера, в зависимости от статуса курьера
-//    если из заказов, то добавляется orderId, хотя и из мобилки можно, если есть
+    /**
+     * Изменяет статус курьера.
+     *
+     * @param request DTO с новым статусом маршрута
+     * @param courierId UUID курьера
+     * @return пустой ответ с HTTP 200 OK
+     */
     @PutMapping("/change_status/{courierId}")
     public ResponseEntity<Void> changeCourierStatus(@RequestBody RouteEventStatusRequestDto request,
                                                     @PathVariable UUID courierId) {
@@ -80,13 +112,13 @@ public class CourierController {
     }
 
 
-//    estimatedArrivalTime
-
+    //    TODO логирования в нужных местах(опыт+ gpt)
+//    TODO security и исключения
+//    TODO чистка кода всего
 
 //    todo: 1. проверить функционал готового кода
 //    todo: 2 добавить доп функционал работы с картами, геозонами
     //    todo: 2. добавить redis для сохранения в кеш текущего положения курьера(последняя точка из locationPoint)
 //    todo: 3. security и тд по документу
 
-//  специально для повторяющихся запросов, еще бы редис вставить  getRoute(coordintes, )
 }
