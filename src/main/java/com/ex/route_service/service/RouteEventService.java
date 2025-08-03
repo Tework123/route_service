@@ -47,6 +47,7 @@ public class RouteEventService {
 
     /**
      * Отправляет маршрутные события в финансовый сервис.
+     * Там высчитывается плата курьеру за доставку заказа
      *
      * @param orderId   идентификатор заказа
      * @param courierId идентификатор курьера
@@ -54,6 +55,9 @@ public class RouteEventService {
     public void sendRouteEvents(UUID orderId, UUID courierId) {
         List<RouteEvent> routeEvents = routeEventRepository.findAllByOrderId(orderId);
         SendRouteEventsRequestDto requestDto = RouteEventMapper.toSendRouteEventsRequestDto(routeEvents, courierId, orderId);
+
+//        добавить rabbitmq, отправка асинхронная,
+//        можно попробовать получить ответ и залогировать его
         financeServiceClient.sendRouteEvents(requestDto);
     }
 }

@@ -106,12 +106,6 @@ public class CourierController {
         courierService.changeCourierStatus(courierId, request);
         return ResponseEntity.ok().build();
     }
-// some changse
-    // some changse
-// some changse
-// some changse
-// some changse
-// some changse
 
 
 //    TODO   исключения

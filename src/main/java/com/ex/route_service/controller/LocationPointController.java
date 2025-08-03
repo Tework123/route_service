@@ -63,9 +63,5 @@ public class LocationPointController {
         return ResponseEntity.ok().build();
 
     }
-//    some changes2
-    //    some changes2
-//    some changes2
-//    some changes2
 
 }
