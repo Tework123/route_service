@@ -3,6 +3,7 @@ package com.ex.route_service.client;
 import com.ex.route_service.AppStartupLogger;
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.dto.OrderServiceDto.OrderResponseDto;
+import com.ex.route_service.producer.FinanceRabbitProducer;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class FinanceServiceClient {
 
 
     private final RequestBuilder requestBuilder;
+    private final FinanceRabbitProducer financeRabbitProducer;
 
     /**
      * Заглушка для получения информации о заказе по ID.
@@ -53,7 +55,8 @@ public class FinanceServiceClient {
      *
      * @param requestDto DTO с данными маршрута, содержащий orderId и courierId
      */
-    public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
+    @Deprecated
+    public void sendRouteEventsRest(SendRouteEventsRequestDto requestDto) {
         String url = requestBuilder.buildUrl(
                 "http",
                 "finance_service:8080",
@@ -81,5 +84,9 @@ public class FinanceServiceClient {
                     " причина={}", requestDto.getOrderId(), requestDto.getCourierId(), ex.getMessage()
             );
         }
+    }
+
+    public void sendRouteEvents(SendRouteEventsRequestDto requestDto){
+        financeRabbitProducer.sendRouteEvents(requestDto);
     }
 }

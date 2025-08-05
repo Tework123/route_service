@@ -167,6 +167,8 @@ public class CourierService {
                 () -> new EntityNotFoundException("Курьер не найден: " + courierId));
         LocationPoint locationPoint = locationPointService.save(statusRequestDto.getLocationDto(), courierId);
 
+        routeEventService.sendRouteEvents(statusRequestDto.getOrderId(), courierId);
+
         RouteEventStatus status = statusRequestDto.getRouteEventStatus();
         CourierStatus newCourierStatus = null;
         WeatherStatus weatherStatus = null;

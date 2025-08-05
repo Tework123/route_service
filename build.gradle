@@ -34,9 +34,11 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.postgresql:postgresql:42.7.5'
 
+    implementation("org.springframework.boot:spring-boot-starter-amqp:3.5.4")
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.apache.commons:commons-pool2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

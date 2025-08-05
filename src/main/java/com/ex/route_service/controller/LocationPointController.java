@@ -63,4 +63,5 @@ public class LocationPointController {
         return ResponseEntity.ok().build();
 
     }
+
 }
