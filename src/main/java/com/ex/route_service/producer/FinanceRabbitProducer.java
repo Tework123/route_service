@@ -17,6 +17,7 @@ public class FinanceRabbitProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+//    ебануть шедулер, пусть пуляет кучу сообщений
     public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
         log.info("Сообщение пытается отправиться в очередь");
 //       логи срабатывают, вроде пришло
