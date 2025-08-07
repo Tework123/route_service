@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class SendRouteEventsRequestDto {
     private UUID courierId;
     private UUID orderId;

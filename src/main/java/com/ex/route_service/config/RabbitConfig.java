@@ -1,9 +1,6 @@
 package com.ex.route_service.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -18,6 +15,9 @@ public class RabbitConfig {
     public static final String EMAIL_QUEUE = "email.queue";
 
     public static final String EXCHANGE_NAME = "delivery";
+
+    public static final String EXCHANGE_FANOUT = "fanout";
+
 
     public static final String ROUTE_EVENTS_QUEUE_ROUTING_KEY = "route_events_queue.routingKey";
     public static final String EMAIL_ROUTING_KEY = "email.routingKey";
@@ -46,6 +46,12 @@ public class RabbitConfig {
     public Binding emailBinding(Queue emailQueue, TopicExchange exchange) {
         return BindingBuilder.bind(emailQueue).to(exchange).with(EMAIL_ROUTING_KEY);
     }
+
+    @Bean
+    public FanoutExchange deliveryExchange() {
+        return new FanoutExchange(EXCHANGE_FANOUT);
+    }
+
 
     @Bean
     public MessageConverter jacksonMessageConverter() {
