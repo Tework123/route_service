@@ -3,6 +3,7 @@ package com.ex.route_service.sheduler;
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.producer.FanoutRabbitProducer;
 import com.ex.route_service.service.RouteEventDataService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,7 +25,7 @@ public class Sheduler {
 //     провести стресс тест, кучу сообщений.
 //    синххронная отправка, асинхронная и тд, почитать на хабре, у gpt, посмотреть кейсы реальные
     @Scheduled(fixedRate = 6000) // каждые 6 секунд
-    public void sendRouteEvents() {
+    public void sendRouteEvents() throws JsonProcessingException {
         List<SendRouteEventsRequestDto.RouteEventDto> routeEventDtos = routeEventDataService.getAllRouteEvents();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
