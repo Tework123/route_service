@@ -18,7 +18,7 @@ public class FinanceRabbitProducer {
     public void sendRouteEvents(SendRouteEventsRequestDto requestDto) {
         log.info("Сообщение пытается отправиться в очередь");
 //       логи срабатывают, вроде пришло
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, ROUTE_EVENTS_QUEUE_ROUTING_KEY, requestDto);
+        rabbitTemplate.convertAndSend(ROUTE_EVENTS_EXCHANGE, ROUTE_EVENTS_QUEUE_ROUTING_KEY, requestDto);
         log.info("Сообщение отправлено в очередь, ROUTE_EVENTS_QUEUE_ROUTING_KEY. Тело: {}", requestDto);
     }
 }

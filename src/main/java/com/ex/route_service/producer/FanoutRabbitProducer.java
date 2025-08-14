@@ -9,7 +9,7 @@ import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.ex.route_service.config.RabbitConfig.EXCHANGE_NAME;
+import static com.ex.route_service.config.RabbitConfig.ROUTE_EVENTS_EXCHANGE;
 import static com.ex.route_service.config.RabbitConfig.ROUTE_EVENTS_QUEUE_ROUTING_KEY;
 
 @Log4j2
@@ -26,7 +26,7 @@ public class FanoutRabbitProducer {
 
         String json = objectMapper.writeValueAsString(requestDto);
 
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, ROUTE_EVENTS_QUEUE_ROUTING_KEY, json, message -> {
+        rabbitTemplate.convertAndSend(ROUTE_EVENTS_EXCHANGE, ROUTE_EVENTS_QUEUE_ROUTING_KEY, json, message -> {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         });
