@@ -1,11 +1,12 @@
 package com.ex.route_service.sheduler;
 
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
-import com.ex.route_service.producer.FanoutRabbitProducer;
+import com.ex.route_service.producer.KafkaProducer;
 import com.ex.route_service.service.RouteEventDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,15 +16,12 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class Sheduler {
+public class ShedulerKafka {
     private final RouteEventDataService routeEventDataService;
-    private final FanoutRabbitProducer fanoutRabbitProducer;
+    private final KafkaProducer kafkaProducer;
 
-//    fanout отправка во все очереди, которые имеют установленный exchange
-//     сделать еще один сервис, проверить что в его очередь тоже отправляется
-//     провести стресс тест, кучу сообщений.
-//    синххронная отправка, асинхронная и тд, почитать на хабре, у gpt, посмотреть кейсы реальные
-//    @Scheduled(fixedRate = 6000) // каждые 6 секунд
+
+    @Scheduled(fixedRate = 6000) // каждые 6 секунд
     public void sendRouteEvents() throws JsonProcessingException {
         List<SendRouteEventsRequestDto.RouteEventDto> routeEventDtos = routeEventDataService.getAllRouteEvents();
 
@@ -32,7 +30,8 @@ public class Sheduler {
         String formattedTime = now.format(formatter);
         log.info("Начинается ежедневная отправка ивентов, время начала - {}, количество - {}", formattedTime, routeEventDtos.size());
         for (int i = 0; i < routeEventDtos.size(); i++) {
-            fanoutRabbitProducer.sendRouteEvents(routeEventDtos.get(i));
+            kafkaProducer.sendMessage("my-topic", routeEventDtos.get(i));
+
         }
 
     }
