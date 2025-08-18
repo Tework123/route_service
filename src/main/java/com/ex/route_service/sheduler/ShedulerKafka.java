@@ -3,7 +3,6 @@ package com.ex.route_service.sheduler;
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.ex.route_service.producer.KafkaProducer;
 import com.ex.route_service.service.RouteEventDataService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +21,7 @@ public class ShedulerKafka {
 
 
     @Scheduled(fixedRate = 6000) // каждые 6 секунд
-    public void sendRouteEvents() throws JsonProcessingException {
+    public void sendRouteEvents() throws Exception {
         List<SendRouteEventsRequestDto.RouteEventDto> routeEventDtos = routeEventDataService.getAllRouteEvents();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -31,7 +30,12 @@ public class ShedulerKafka {
         log.info("Начинается ежедневная отправка ивентов, время начала - {}, количество - {}", formattedTime, routeEventDtos.size());
         for (int i = 0; i < routeEventDtos.size(); i++) {
             kafkaProducer.sendMessage("my-topic", routeEventDtos.get(i));
-
+//            kafkaProducer.sendAndReceive("request-topic", routeEventDtos.get(i));
+//TODO задокументировать. Протестить чтение на 2 консумерах одниъ. Надо записать все основы в документ,
+//        TODO    enable.idempotence=true → защита от дублирования  / transactional.id. Чекать статьи на хабре про это
+// примеры тоже записать
+// и тех же сообщений, попросить gpt придумать бизнес кейсы. Далее транзакции по статье харб
+// далее чекать вопросы для собесов по кафке, отличия от раббит
         }
 
     }
