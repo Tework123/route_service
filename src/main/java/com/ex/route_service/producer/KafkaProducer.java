@@ -4,6 +4,7 @@ import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
@@ -16,7 +17,9 @@ public class KafkaProducer {
     private final ObjectMapper objectMapper;
     private final ReplyingKafkaTemplate<String, String, String> replyingTemplate;
 
-    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper, ReplyingKafkaTemplate<String, String, String> replyingTemplate) {
+    public KafkaProducer(@Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+                         ObjectMapper objectMapper,
+                         ReplyingKafkaTemplate<String, String, String> replyingTemplate) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
         this.replyingTemplate = replyingTemplate;
