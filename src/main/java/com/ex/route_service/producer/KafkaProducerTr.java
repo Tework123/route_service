@@ -19,6 +19,9 @@ public class KafkaProducerTr {
         this.objectMapper = objectMapper;
     }
 
+//    отправляем сообщения в два топика, транзакционность обеспечивается на стороне продусера.
+//    В данном методе, если отправится первое сообщение, а второе нет,
+//    то первое будет невидно для консумеров. Работает за счет @Transactional("transactionManager")
     @Transactional("transactionManager")
     public void sendMessage(String topic, SendRouteEventsRequestDto.RouteEventDto dto) throws JsonProcessingException, InterruptedException {
 
@@ -28,7 +31,6 @@ public class KafkaProducerTr {
         System.out.println("some wait");
         Thread.sleep(10000); // проверяем транзакцию
         kafkaTrTemplate.send(topic, json);
-
 
         System.out.println("Sent message: " + dto);
     }

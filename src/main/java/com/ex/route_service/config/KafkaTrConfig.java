@@ -16,6 +16,8 @@ import java.util.Map;
 @Configuration
 public class KafkaTrConfig {
 
+    //    тестировал транзакционность на стороне продусеров.
+    //    На стороне консумеров транзакционность не обеспечивается
     @Bean
     public NewTopic trTopic() {
         return new NewTopic("tr-topic", 3, (short) 1)
@@ -49,10 +51,11 @@ public class KafkaTrConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true); // убирает дубликаты
         // transactional.id генерируется с префиксом my-tx-
         return props;
     }
+
     @Bean
     public ProducerFactory<String, String> nonTxProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs()); // без setTransactionIdPrefix
