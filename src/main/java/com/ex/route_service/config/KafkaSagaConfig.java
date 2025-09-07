@@ -26,6 +26,29 @@ public class KafkaSagaConfig {
                 ));
     }
 
+    //     success topic
+    @Bean
+    public NewTopic sagaSuccessTopic() {
+        return new NewTopic("saga-success-topic", 3, (short) 1)
+                .configs(Map.of(
+                        "retention.ms", "3600000",
+                        "cleanup.policy", "delete",
+                        "max.message.bytes", "1048576"
+                ));
+    }
+
+    //     cancel topic
+    @Bean
+    public NewTopic sagaCancelTopic() {
+        return new NewTopic("saga-cancel-topic", 3, (short) 1)
+                .configs(Map.of(
+                        "retention.ms", "3600000",
+                        "cleanup.policy", "delete",
+                        "max.message.bytes", "1048576"
+                ));
+    }
+
+    //    main producer
     @Bean
     public KafkaTemplate<String, String> kafkaSagaMainTemplate() {
         return new KafkaTemplate<>(producerSagaMainFactory());
