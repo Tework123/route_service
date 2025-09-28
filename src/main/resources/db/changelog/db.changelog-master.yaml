@@ -7,4 +7,6 @@ databaseChangeLog:
       file: /db/changelog/changeset/05/28_05_2025_add_weather_field.yaml
   - include:
       file: /db/changelog/changeset/06/07_06_2025_change_test_data.yaml
+  - include:
+      file: /db/changelog/changeset/09/01-create_count_table.yaml
 

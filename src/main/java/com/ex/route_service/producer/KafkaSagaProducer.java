@@ -1,6 +1,6 @@
 package com.ex.route_service.producer;
 
-import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.CountDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +17,7 @@ public class KafkaSagaProducer {
         this.objectMapper = objectMapper;
     }
 
-    public void sendMessage(String topic, SendRouteEventsRequestDto.RouteEventDto dto) throws JsonProcessingException, InterruptedException {
+    public void sendMessage(String topic, CountDto dto) throws JsonProcessingException, InterruptedException {
         String json = objectMapper.writeValueAsString(dto);
 
         kafkaSagaMainTemplate.send(topic, json);

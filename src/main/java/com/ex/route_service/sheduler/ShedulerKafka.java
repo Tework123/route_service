@@ -1,9 +1,11 @@
 package com.ex.route_service.sheduler;
 
 import com.ex.route_service.dto.FinanceServiceDto.SendRouteEventsRequestDto;
+import com.ex.route_service.dto.RouteServiceDto.CountDto;
 import com.ex.route_service.producer.KafkaProducer;
 import com.ex.route_service.producer.KafkaProducerTr;
 import com.ex.route_service.producer.KafkaSagaProducer;
+import com.ex.route_service.service.CountService;
 import com.ex.route_service.service.RouteEventDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class ShedulerKafka {
     private final KafkaProducer kafkaProducer;
     private final KafkaProducerTr kafkaProducerTr;
     private final KafkaSagaProducer kafkaSagaProducer;
+    private final CountService countService;
 
 
     //    стандарт
@@ -62,16 +65,13 @@ public class ShedulerKafka {
     // другой сервис видит это и откатывает свои изменения, потом надо еще отправить сообщение в
     // продусер об ошибке(типо тоже откатим что-то)
     // тот самый saga
-    @Scheduled(fixedRate = 6000) // каждые 6 секунд
+    @Scheduled(fixedRate = 10000)
     public void sendRouteEventsSaga() throws Exception {
-        List<SendRouteEventsRequestDto.RouteEventDto> routeEventDtos = routeEventDataService.getAllRouteEvents();
+        CountDto countDto = countService.create();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String formattedTime = now.format(formatter);
-        log.info("Начинается ежедневная отправка ивентов saga, время начала - {}, количество - {}", formattedTime, routeEventDtos.size());
+        log.info("Начинается ежедневная отправка ивентов saga");
 //        for (int i = 0; i < routeEventDtos.size(); i++) {
-        kafkaSagaProducer.sendMessage("saga-main-topic", routeEventDtos.get(0));
+        kafkaSagaProducer.sendMessage("saga-main-topic", countDto);
 //        }
     }
 }

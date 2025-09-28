@@ -32,6 +32,7 @@ public class CourierController {
     @GetMapping("/{courierId}")
     public GetCourierResponseDto getCourier(@PathVariable UUID courierId) {
         return courierService.getCourier(courierId);
+
     }
 
     /**
