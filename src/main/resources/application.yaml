@@ -12,16 +12,34 @@ spring:
     hikari:
       auto-commit: false
 
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      acks: all
+#      retries: 3
+#      linger-ms: 5
+#      batch-size: 16384
+#      compression-type: snappy
+#    consumer:
+#      group-id: my-json-group
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
+    requested-heartbeat: 30    # 30 секунд
+    connection-timeout: 5000   # таймаут на подключение (мс)
 
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
-    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate.format_sql: true
 
@@ -33,10 +51,6 @@ spring:
       host: localhost
       port: 6379
       timeout: 60000
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 
 openrouteservice:

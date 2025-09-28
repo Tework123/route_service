@@ -72,6 +72,7 @@ public class CourierService {
      *
      * @param courierRequestDto данные для создания курьера
      */
+    @Transactional
     public void createCourier(CreateCourierRequestDto courierRequestDto) {
         Courier courier = courierRepository.save(buildEntity(courierRequestDto));
         log.info("Курьер создан: courierId={}", courier.getCourierId());
