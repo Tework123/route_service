@@ -6,6 +6,7 @@ import com.ex.route_service.producer.KafkaProducer;
 import com.ex.route_service.producer.KafkaProducerTr;
 import com.ex.route_service.producer.KafkaSagaProducer;
 import com.ex.route_service.service.CountService;
+import com.ex.route_service.service.CourierService;
 import com.ex.route_service.service.RouteEventDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class ShedulerKafka {
     private final KafkaProducerTr kafkaProducerTr;
     private final KafkaSagaProducer kafkaSagaProducer;
     private final CountService countService;
+    private final CourierService courierService;
 
 
     //    стандарт
@@ -52,7 +54,7 @@ public class ShedulerKafka {
         String formattedTime = now.format(formatter);
         log.info("Начинается ежедневная отправка ивентов тр, время начала - {}, количество - {}", formattedTime, routeEventDtos.size());
         for (int i = 0; i < routeEventDtos.size(); i++) {
-            kafkaProducerTr.sendMessage("tr-topic", routeEventDtos.get(i));
+//            kafkaProducerTr.sendMessage("tr-topic", routeEventDtos.get(i));
         }
     }
 
@@ -66,12 +68,12 @@ public class ShedulerKafka {
     // продусер об ошибке(типо тоже откатим что-то)
     // тот самый saga
     @Scheduled(fixedRate = 10000)
-    public void sendRouteEventsSaga() throws Exception {
+    public void sendNewCountSaga() throws Exception {
+//        вынести в другой класс создание
         CountDto countDto = countService.create();
 
         log.info("Начинается ежедневная отправка ивентов saga");
-//        for (int i = 0; i < routeEventDtos.size(); i++) {
         kafkaSagaProducer.sendMessage("saga-main-topic", countDto);
-//        }
+
     }
 }
