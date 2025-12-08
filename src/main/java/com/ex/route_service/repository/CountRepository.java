@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface CountRepository extends JpaRepository<Count, UUID> {
 
+    Count findByRouteEventId(UUID routeEventId);
+
 }

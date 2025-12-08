@@ -32,15 +32,15 @@ public class CountService {
         return CountMapper.toDto(count);
     }
 
-//    public void cancel(UUID routeEventId) {
-//        Count count = countRepository.findByRouteEventId(routeEventId);
-//
-//        if (count != null) {
-//            count.setCountStatus(CountStatus.CANCEL);
-//            countRepository.save(count);
-//            log.info("Finance_service отменил count в бд  {}", routeEventId);
-//        }
-//        log.info("Finance_service не нашел count в бд чтобы его отменить  {}", routeEventId);
-//
-//    }
+    public void cancel(UUID routeEventId) {
+        Count count = countRepository.findByRouteEventId(routeEventId);
+
+        if (count != null) {
+            count.setCountStatus(CountStatus.CANCEL);
+            countRepository.save(count);
+            log.info("route_service отменил count в бд  {}", routeEventId);
+        } else {
+            log.info("route_service не нашел count в бд чтобы его отменить  {}", routeEventId);
+        }
+    }
 }

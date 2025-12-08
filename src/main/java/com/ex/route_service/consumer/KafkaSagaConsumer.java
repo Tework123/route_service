@@ -1,28 +1,26 @@
 package com.ex.route_service.consumer;
 
+import com.ex.route_service.service.CountService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class KafkaSagaConsumer {
     private final ObjectMapper objectMapper;
+    private final CountService countService;
 
-//    todo нужен консумер здесь, чтобы откатывать здесь базу, пока не сделал count.
-
-//    @KafkaListener(topics = "saga-main-topic",
-//            groupId = "route_service_main_consumer",
-//            containerFactory = "kafkaSagaMainListenerContainerFactory")
-//    public void listenSagaMainTopic(String message) throws JsonProcessingException {
-//        SendRouteEventsRequestDto.RouteEventDto dto = objectMapper.readValue(message, SendRouteEventsRequestDto.RouteEventDto.class);
-//        System.out.println("financeService consumer принял сообщение из saga-main-topic: " + dto.getRouteEventId());
-//// пишем в базу
-////        отправляем в другой топик сообщение
-////        если exception то в другой топик, а если при отправке туда тоже exception? gg
-//    }
-
-    public void listenSagaSuccessTopic(){
-
+    @KafkaListener(topics = "saga-cancel-topic",
+            groupId = "route_service_cancel_consumer",
+            containerFactory = "kafkaSagaCancelListenerContainerFactory")
+    public void listenSagaCancelTopic(String message) throws JsonProcessingException {
+        UUID routeEventId = objectMapper.readValue(message, UUID.class);
+        System.out.println("route_service consumer принял сообщение из saga-cancel-topic: " + routeEventId);
+        countService.cancel(routeEventId);
     }
 }

@@ -72,14 +72,14 @@ public class KafkaSagaConfig {
 
     // consumer
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaSagaMainListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaSagaCancelListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerSagaMainFactory());
+        factory.setConsumerFactory(consumerSagaCancelFactory());
         return factory;
     }
 
-    private ConsumerFactory<String, String> consumerSagaMainFactory() {
+    private ConsumerFactory<String, String> consumerSagaCancelFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
